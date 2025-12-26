@@ -56,6 +56,10 @@ export interface GraphemeRow {
   grapheme: string
 }
 
+export interface MorphemeRow {
+  morpheme_tag: string
+}
+
 export enum MorphemeColumns {
   morpheme = 'morpheme_tag'
 }

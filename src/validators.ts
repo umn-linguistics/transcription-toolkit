@@ -1,3 +1,5 @@
+  import { REPLACEMENT_MARKER } from "./interfaces/constants";
+  
   export function validHeaders(headers: string[], supportedHeaders: Object): string[] {
     if (headers.length < 1) {
         throw new Error('No headers found');
@@ -31,3 +33,42 @@
 
     return headers;
   }
+
+export const validateGloss = (str: string, validMorphemeTags: string[]): string => {
+  // Escape special regex characters in morpheme tags
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  // Sort tags by length (longest first) for greedy matching
+  const sortedTags = [...validMorphemeTags]
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegex);
+
+  // Build regex pattern:
+  // Match either a morpheme tag OR a single valid character (a-z, hyphen, period, space)
+  const tagPattern = sortedTags.length > 0 ? sortedTags.join('|') + '|' : '';
+  const pattern = new RegExp(`^(?:${tagPattern}[a-z\\-.  ])`);
+
+  let result = '';
+  let i = 0;
+
+  while (i < str.length) {
+    let matched = false;
+
+    // Try to match from current position
+    const remaining = str.slice(i);
+    const match = remaining.match(pattern);
+
+    if (match) {
+      result += match[0];
+      i += match[0].length;
+      matched = true;
+    }
+
+    if (!matched) {
+      result += REPLACEMENT_MARKER;
+      i++;
+    }
+  }
+
+  return result;
+}

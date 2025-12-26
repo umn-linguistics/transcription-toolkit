@@ -59,3 +59,28 @@ export function validateIDs(){
     .setHeight(issues.length === 0 ? 150 : 400);
   SpreadsheetApp.getUi().showModalDialog(html, 'ID Validation Results');
 }
+
+export function validateMorphemeLabels(){
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const morphemes = transcriptSpreadsheet.getMorphemeData();
+
+  const invalidTranscriptions = transcript.validateMorphemeLabels(morphemes);
+
+  Logger.log(invalidTranscriptions);
+  // Update spreadsheet with validation results
+  transcriptSpreadsheet.updateTranscriptWithMorphemeValidations(invalidTranscriptions, transcript.headers);
+
+  // Use custom HTML dialog for better display of multiple IDs
+  const template = HtmlService.createTemplateFromFile('validation-results-template');
+  template.count = invalidTranscriptions.length;
+  template.validationType = "gloss abbreviation";
+  //template.ids = invalidTranscriptions.map(r => r.id);
+  template.ids = invalidTranscriptions.map(r => `ID "${r.id}: ${r.text}`);
+  const html = template.evaluate()
+    .setWidth(500)
+    .setHeight(invalidTranscriptions.length === 0 ? 150 : 400);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Morpheme Validation Results');
+}
