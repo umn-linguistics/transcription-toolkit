@@ -84,3 +84,35 @@ export function validateMorphemeLabels(){
     .setHeight(invalidTranscriptions.length === 0 ? 150 : 400);
   SpreadsheetApp.getUi().showModalDialog(html, 'Morpheme Validation Results');
 }
+
+export function validateGlossAlignment() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  const misalignedRows = transcript.validateGlosses();
+
+  // Update spreadsheet with validation results
+  transcriptSpreadsheet.updateTranscriptWithGlossAlignmentValidations(misalignedRows, transcript.headers);
+
+  // Use custom HTML dialog for better display of multiple IDs
+  const template = HtmlService.createTemplateFromFile('validation-results-template');
+  template.count = misalignedRows.length;
+  template.validationType = "gloss alignment";
+  template.ids = misalignedRows;
+  const html = template.evaluate()
+    .setWidth(500)
+    .setHeight(misalignedRows.length === 0 ? 150 : 400);
+  SpreadsheetApp.getUi().showModalDialog(html, 'Gloss Validation Results');
+}
+
+export function clearValidations() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  // Reset fill color for all cells to white
+  transcriptSpreadsheet.setAllRowsToWhite(transcript.headers);
+}

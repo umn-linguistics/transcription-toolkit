@@ -1,4 +1,4 @@
-import { validateGraphemes, validateIDs, validateMorphemeLabels } from "./gsheets-app";
+import { clearValidations, validateGlossAlignment, validateGraphemes, validateIDs, validateMorphemeLabels } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
@@ -6,7 +6,9 @@ function onOpen() {
   ui.createMenu('🧰 Transcript Tools')
       .addItem('Validate Characters', 'validateGraphemesMenuItem')
       .addItem('Validate IDs', 'validateIDsMenuItem')
-      .addItem('Validate Morpheme Labels', 'validateMorphemeLabelsMenuItem')
+      .addItem('Validate Gloss Labels', 'validateMorphemeLabelsMenuItem')
+      .addItem('Validate Gloss Alignment', 'validateGlossAlignmentMenuItem')
+      .addItem('Clear Validation Results', 'clearValidationResultsMenuItem')
       .addToUi();
 }
 
@@ -25,6 +27,14 @@ function validateIDsMenuItem() {
 
 function validateMorphemeLabelsMenuItem() {
     validateMorphemeLabels();
+}
+
+function validateGlossAlignmentMenuItem() {
+    validateGlossAlignment();
+}
+
+function clearValidationResultsMenuItem() {
+    clearValidations();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script

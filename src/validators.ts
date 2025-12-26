@@ -72,3 +72,13 @@ export const validateGloss = (str: string, validMorphemeTags: string[]): string 
 
   return result;
 }
+
+export const validateGlossAlignment = (transcription: string, gloss: string): boolean => {
+  const utteranceList = normalizeWhitespace(transcription).split(' ');
+  const utteranceGlossList = normalizeWhitespace(gloss).split(' ');
+
+  return utteranceList.length === utteranceGlossList.length;
+};
+
+export const normalizeWhitespace = (str: string): string =>
+  str.replace(/\s+/g, ' ').trim();
