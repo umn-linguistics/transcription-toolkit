@@ -1,7 +1,8 @@
-import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, Transcription } from './types';
-import { validHeaders } from './validators';
+import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, MorphemeColumns, Transcription } from './types';
+import { validateGloss, validHeaders } from './validators';
 import { Profile, TokenizeOptions, Tokenizer } from '@enfrank/segments-js';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
+import { Gloss } from './Gloss';
 
 const SUPPORTED_HEADERS = Object.values(TranscriptColumns);
 
@@ -120,5 +121,25 @@ export class Transcript {
     });
 
     return { missingIds, duplicateRowNumbers };
+  }
+
+  validateMorphemeLabels(morphemeData: Gloss): Transcription[] {
+    const invalidGloss: Transcription[] = [];
+
+    const headerIndex = (header: TranscriptColumns) =>
+      this.headers.indexOf(header);
+
+    const morphemeHeaderIndex = (header: MorphemeColumns) =>
+      morphemeData.headers.indexOf(header);
+
+    for (const row of this.rows) {
+      const validated = validateGloss(row.utteranceGloss, morphemeData.validMorphemeLabels);
+
+      if (validated.includes(REPLACEMENT_MARKER)) {
+        invalidGloss.push({id:row.id, text:validated});
+      }
+    }
+
+    return invalidGloss;
   }
 }
