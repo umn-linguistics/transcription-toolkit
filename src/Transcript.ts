@@ -93,6 +93,32 @@ export class Transcript {
     }
 
     return invalidTranscriptions;
+  }
 
+  validateIds(): { missingIds: number[]; duplicateRowNumbers: string[] } {
+    const missingIds: number[] = [];
+    const duplicateRowNumbers: string[] = [];
+    const seenIds = new Map<string, number>();
+
+    this.rows.forEach((row, index) => {
+      const rowNumber = index + 1; // Start row numbers at 1
+
+      // Check if ID is missing or empty
+      if (row.id === '') {
+        missingIds.push(rowNumber);
+      } else {
+        // Check for duplicates
+        if (seenIds.has(row.id)) {
+          // Only add to duplicates list once per ID
+          if (!duplicateRowNumbers.includes(row.id)) {
+            duplicateRowNumbers.push(row.id);
+          }
+        } else {
+          seenIds.set(row.id, rowNumber);
+        }
+      }
+    });
+
+    return { missingIds, duplicateRowNumbers };
   }
 }

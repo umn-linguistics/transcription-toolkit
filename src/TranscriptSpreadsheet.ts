@@ -75,4 +75,35 @@ export class TranscriptSpreadsheet {
 
     return numRows;
   }
+
+  updateTranscriptWithIdValidations(duplicateIds: string[], headers: string[]): number {
+    const transcriptRowCount = this.spreadsheet.getLastRow();
+
+    if (transcriptRowCount < 2) {
+      return 0; // No data rows
+    }
+
+    const numRows = transcriptRowCount - 1; // Exclude header row
+    const idColIndex = headers.indexOf('id') + 1;
+    const duplicateIdsSet = new Set(duplicateIds.map(id => String(id)));
+
+    // Build list of all cell background updates
+    const updates: Array<{row: number, col: number, color: string}> = [];
+
+    // Get all rows and check each one
+    const rows = this.spreadsheet.getRows();
+
+    rows.forEach((row, index) => {
+      const rowNum = index + 2; // Row 1 is headers, data starts at row 2
+      const idValue = String(row[idColIndex - 1] || '').trim();
+
+      const color = duplicateIdsSet.has(idValue) ? '#eb9999' : 'white';
+      updates.push({ row: rowNum, col: idColIndex, color });
+    });
+
+    // Apply all updates in batch
+    this.spreadsheet.updateCellBackgrounds(updates);
+
+    return numRows;
+  }
 }
