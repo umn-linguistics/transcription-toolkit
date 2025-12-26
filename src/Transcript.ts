@@ -1,5 +1,5 @@
 import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, MorphemeColumns, Transcription } from './types';
-import { validateGloss, validHeaders } from './validators';
+import { validateGloss, validateGlossAlignment, validHeaders } from './validators';
 import { Profile, TokenizeOptions, Tokenizer } from '@enfrank/segments-js';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
@@ -141,5 +141,17 @@ export class Transcript {
     }
 
     return invalidGloss;
+  }
+
+  validateGlosses(): string[] {
+    const misaligned: string[] = [];
+    
+    for (const row of this.rows) {
+      if (!validateGlossAlignment(row.utterance, row.utteranceGloss)) {
+        misaligned.push(row.id);
+      }
+    }
+
+    return misaligned;
   }
 }

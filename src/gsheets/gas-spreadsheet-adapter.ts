@@ -118,7 +118,7 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
     const idMap = new Map<string, number>();
     const idColumnIndex = headers.indexOf('id') + 1; // 1-indexed
 
-    for (let rownum = 2; rownum <= transcriptRowCount; rownum++) {
+    for (let rownum = 1; rownum <= transcriptRowCount; rownum++) {
       const transcriptEntryId = sheet.getRange(rownum, idColumnIndex).getValue();
       idMap.set(transcriptEntryId.toString(), rownum);
     }
