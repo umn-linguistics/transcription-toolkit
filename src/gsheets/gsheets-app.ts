@@ -2,6 +2,22 @@
 import { GASSpreadsheetAdapter } from "./gas-spreadsheet-adapter";
 import { TranscriptSpreadsheet } from "../TranscriptSpreadsheet";
 
+/*
+*   Spreadsheet setup
+*/
+export function createNewWorksheet() {
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  // Create the worksheet
+  const sheetName = transcriptSpreadsheet.createTranscriptSheet(transcript.headers);
+
+  // Show success message
+  SpreadsheetApp.getUi()
+    .alert(`Created new worksheet: ${sheetName}`);
+}
+
 export function validateGraphemes() {
   // Fetch data
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
