@@ -17,6 +17,31 @@ export class TranscriptSpreadsheet {
     //this.transcript = new Transcript(SUPPORTED_HEADERS);
   }
 
+  generateUniqueSheetName(existingNames: string[], baseName: string = 'TranscriptSheet'): string {
+    let newSheetName = baseName;
+    let counter = 0;
+
+    while (existingNames.includes(newSheetName)) {
+      counter += 1;
+      newSheetName = `${baseName}-${counter}`;
+    }
+
+    return newSheetName;
+  }
+
+  createTranscriptSheet(columnHeaders: string[], baseName: string = 'TranscriptSheet'): string {
+    // Get existing sheet names
+    const existingNames = this.spreadsheet.getSheetNames();
+
+    // Generate unique name
+    const sheetName = this.generateUniqueSheetName(existingNames, baseName);
+
+    // Create the sheet with headers
+    this.spreadsheet.createSheet(sheetName, columnHeaders);
+
+    return sheetName;
+  }
+
   public getTranscriptData(): Transcript {
     const headers = this.spreadsheet.getHeaders();
     const transcript = new Transcript(headers);
