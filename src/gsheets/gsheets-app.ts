@@ -2,7 +2,7 @@
 import { GASSpreadsheetAdapter } from "./gas-spreadsheet-adapter";
 import { TranscriptSpreadsheet } from "../TranscriptSpreadsheet";
 
-export function validateGraphemes(){
+export function validateGraphemes() {
   // Fetch data
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
@@ -25,4 +25,37 @@ export function validateGraphemes(){
     .setWidth(500)
     .setHeight(invalidTranscriptions.length === 0 ? 150 : 400);
   SpreadsheetApp.getUi().showModalDialog(html, 'Grapheme Validation Results');
+}
+
+export function validateIDs(){
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  const { missingIds, duplicateRowNumbers } = transcript.validateIds();
+
+  // Update spreadsheet with validation results (highlight duplicates in red)
+  transcriptSpreadsheet.updateTranscriptWithIdValidations(duplicateRowNumbers, transcript.headers);
+
+  // Build list of issues for display
+  const issues: string[] = [];
+
+  if (missingIds.length > 0) {
+    issues.push(...missingIds.map(row => `Row ${row}: Missing ID`));
+  }
+
+  if (duplicateRowNumbers.length > 0) {
+    issues.push(...duplicateRowNumbers.map(id => `ID "${id}": Duplicate`));
+  }
+
+  // Use custom HTML dialog for better display
+  const template = HtmlService.createTemplateFromFile('validation-results-template');
+  template.count = issues.length;
+  template.validationType = "ID";
+  template.ids = issues;
+  const html = template.evaluate()
+    .setWidth(500)
+    .setHeight(issues.length === 0 ? 150 : 400);
+  SpreadsheetApp.getUi().showModalDialog(html, 'ID Validation Results');
 }
