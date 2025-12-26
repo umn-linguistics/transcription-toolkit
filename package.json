@@ -7,7 +7,7 @@
     "test": "jest --transformIgnorePatterns \"node_modules/(?!word-aligner)/\"",
     "deploy": "clasp push",
     "ci": "npm run test && npm run build && npm run deploy",
-    "manifest": "cp appsscript.json dist/ && cp src/*-template.html dist/",
+    "manifest": "cp appsscript.json dist/ && cp src/gsheets/*-template.html dist/",
     "bundle": "npx esbuild src/bundle.js --bundle --outfile=dist/bundle.js --format=iife --inject:src/buffer-polyfill.js --define:global=globalThis"
   },
   "keywords": [],

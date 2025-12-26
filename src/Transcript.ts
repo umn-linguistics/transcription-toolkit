@@ -75,6 +75,9 @@ export class Transcript {
     return concordanceData;
   }
 
+  /*
+  *   Validation methods
+  */
   public validateGraphemes(graphemeProfile: Profile): Transcription[]{
     const invalidTranscriptions: Transcription[] = [];
     const opts: TokenizeOptions = { errors: 'replace' };
