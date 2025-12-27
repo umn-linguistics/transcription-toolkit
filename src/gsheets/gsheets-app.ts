@@ -174,3 +174,48 @@ export function showSelectedGlosses() {
 
   SpreadsheetApp.getUi().showModelessDialog(html, 'Selected Glosses');
 }
+
+export function exportLatex() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+  //const transcriptStorage = new TranscriptStorage(storageAdapter);
+
+  // Generate LaTex 
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const latex = transcript.generateLatexDocument();
+`
+  // Save file`
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  const fileName = `transcript-${sheetName}.tex`;
+  const folderId = storageAdapter.getCurrentFolderId();
+
+  const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/plain');
+  file.setContent(latex);
+
+  SpreadsheetApp.getUi()
+    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+}
+
+export function exportText() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+
+  // Generate LaTex 
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const text = transcript.generateGlossText();
+
+  // Save file
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  const fileName = `transcript-${sheetName}.txt`;
+  const folderId = storageAdapter.getCurrentFolderId();
+
+  const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/plain');
+  file.setContent(text);
+
+  SpreadsheetApp.getUi()
+    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+}

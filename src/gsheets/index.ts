@@ -6,15 +6,14 @@ import {
     validateGraphemes, 
     validateIDs, 
     validateMorphemeLabels,
-    showSelectedGlosses } from "./gsheets-app";
+    showSelectedGlosses,
+    exportLatex,
+    exportText } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🧰 Transcript Tools')
-    //   .addItem('Create New Worksheet', 'createNewWorksheet')
-    //   .addItem('Create New Worksheet', 'createNewWorksheet')
-    //   .addSeparator()
       .addItem('Show glosses for selected rows', 'showSelectedGlossesMenuItem')
       .addSubMenu(ui.createMenu('Setup')
         .addItem('Create New Worksheet', 'createNewWorksheet'))
@@ -26,6 +25,11 @@ function onOpen() {
         .addItem('Validate Gloss Labels', 'validateMorphemeLabelsMenuItem')
         .addItem('Validate Gloss Alignment', 'validateGlossAlignmentMenuItem')
         .addItem('Clear Validation Results', 'clearValidationResultsMenuItem'))
+      .addSubMenu(ui.createMenu('Export')
+        .addItem('Export as LaTeX', 'exportLatexMenuItem')
+        .addItem('Export as TXT', 'exportTextMenuItem'))
+        //.addItem('Export as CSV', 'exportElanCsvMenuItem')
+        //.addItem('Export as CSV by speaker', 'exportElanCsvBySpeakerMenuItem'))
       .addToUi();
 }
 
@@ -64,6 +68,14 @@ function clearValidationResultsMenuItem() {
 
 function showSelectedGlossesMenuItem() {
     showSelectedGlosses();
+}
+
+function exportLatexMenuItem() {
+    exportLatex();
+}
+
+function exportTextMenuItem() {
+    exportText();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script
