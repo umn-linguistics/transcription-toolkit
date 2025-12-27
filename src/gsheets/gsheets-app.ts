@@ -3,6 +3,7 @@ import { GASSpreadsheetAdapter } from "./gas-spreadsheet-adapter";
 import { TranscriptSpreadsheet } from "../TranscriptSpreadsheet";
 import { ConcordanceRow } from "../types";
 import { GASStorageAdapter } from "./gas-storage-adapter";
+import { GASUIAdapter } from "./gas-ui-adapter";
 import { TranscriptStorage } from "../TranscriptStorage";
 
 /*
@@ -156,4 +157,20 @@ export function clearValidations() {
 
   // Reset fill color for all cells to white
   transcriptSpreadsheet.setAllRowsToWhite(transcript.headers);
+}
+
+export function showSelectedGlosses() {
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const uiAdapter = new GASUIAdapter();
+
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const transcript = transcriptSpreadsheet.getSelectedTranscriptData();
+
+  const glosses = transcript.generateGlossHtml();
+
+  // Evaluate template
+  const glossTemplate = uiAdapter.evaluateTemplate('gloss-template', { CONTENT: glosses });
+  const html = HtmlService.createHtmlOutput(glossTemplate);
+
+  SpreadsheetApp.getUi().showModelessDialog(html, 'Selected Glosses');
 }

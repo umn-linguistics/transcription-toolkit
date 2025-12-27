@@ -154,4 +154,38 @@ export class Transcript {
 
     return misaligned;
   }
+
+  generateGlossHtml(): string {
+    let utteranceBlocks = '';
+
+    for (const row of this.rows) {
+      const concordance = this.toConcordance(row);
+      let wordBlocks = '';
+
+      for (const wordRow of concordance) {
+        wordBlocks += this.createWordBlock(wordRow.word, wordRow.wordGloss);
+      }
+
+      utteranceBlocks += this.createUtteranceBlock(row.id, wordBlocks, row.freeTranslation);
+    }
+
+    return utteranceBlocks;
+  }
+
+  createWordBlock = (word: string, wordGloss: string): string => `      <div class="intlin">
+            <span class="orig">${word}</span>
+            <span class="morph">${wordGloss}</span>
+        </div>
+        `;
+
+  createUtteranceBlock = (
+    id: string,
+    wordBlocks: string,
+    freeTranslation: string
+  ): string => `    <div class="interlinear">
+      <div class="utterance">(${id})</div>
+      ${wordBlocks}
+      <div class="freetrans">${freeTranslation}</div>
+      </div>`;
+
 }

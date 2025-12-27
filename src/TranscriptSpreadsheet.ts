@@ -17,6 +17,27 @@ export class TranscriptSpreadsheet {
     //this.transcript = new Transcript(SUPPORTED_HEADERS);
   }
 
+  public getTranscriptData(): Transcript {
+    const headers = this.spreadsheet.getHeaders();
+    const transcript = new Transcript(headers);
+    const rows = this.spreadsheet.getRows();
+    transcript.load(rows);
+    return transcript;
+  }
+
+  public getSelectedTranscriptData(): Transcript {
+    const headers = this.spreadsheet.getHeaders();
+    const transcript = new Transcript(headers);
+    const rows = this.spreadsheet.getSelectedData(headers);
+    
+    if (rows.length === 0) {
+      throw new Error('No rows are selected. Select one or more rows to see glosses.');
+    }
+
+    transcript.load(rows);
+    return transcript;
+  }
+
   generateUniqueSheetName(existingNames: string[], baseName: string = 'TranscriptSheet'): string {
     let newSheetName = baseName;
     let counter = 0;
@@ -40,14 +61,6 @@ export class TranscriptSpreadsheet {
     this.spreadsheet.createSheet(sheetName, columnHeaders);
 
     return sheetName;
-  }
-
-  public getTranscriptData(): Transcript {
-    const headers = this.spreadsheet.getHeaders();
-    const transcript = new Transcript(headers);
-    const rows = this.spreadsheet.getRows();
-    transcript.load(rows);
-    return transcript;
   }
 
   getGraphemeData(): Orthography {
