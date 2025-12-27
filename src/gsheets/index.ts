@@ -8,7 +8,8 @@ import {
     validateMorphemeLabels,
     showSelectedGlosses,
     exportLatex,
-    exportText } from "./gsheets-app";
+    exportText,
+    exportCsv } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
@@ -27,8 +28,8 @@ function onOpen() {
         .addItem('Clear Validation Results', 'clearValidationResultsMenuItem'))
       .addSubMenu(ui.createMenu('Export')
         .addItem('Export as LaTeX', 'exportLatexMenuItem')
-        .addItem('Export as TXT', 'exportTextMenuItem'))
-        //.addItem('Export as CSV', 'exportElanCsvMenuItem')
+        .addItem('Export as TXT', 'exportTextMenuItem')
+        .addItem('Export as CSV', 'exportCsvMenuItem'))
         //.addItem('Export as CSV by speaker', 'exportElanCsvBySpeakerMenuItem'))
       .addToUi();
 }
@@ -76,6 +77,10 @@ function exportLatexMenuItem() {
 
 function exportTextMenuItem() {
     exportText();
+}
+
+function exportCsvMenuItem() {
+    exportCsv();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script
