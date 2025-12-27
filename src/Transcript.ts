@@ -172,13 +172,13 @@ export class Transcript {
     return utteranceBlocks;
   }
 
-  createWordBlock = (word: string, wordGloss: string): string => `      <div class="intlin">
+  private createWordBlock = (word: string, wordGloss: string): string => `      <div class="intlin">
             <span class="orig">${word}</span>
             <span class="morph">${wordGloss}</span>
         </div>
         `;
 
-  createUtteranceBlock = (
+  private createUtteranceBlock = (
     id: string,
     wordBlocks: string,
     freeTranslation: string
@@ -188,4 +188,96 @@ export class Transcript {
       <div class="freetrans">${freeTranslation}</div>
       </div>`;
 
+  private sanitizeGlossString = (str: string): string =>
+    str.replace(/\[|\]|{|}|\\|&/g, '');
+
+  private createLatexGloss = (
+    id: string,
+    transcription: string,
+    gloss: string,
+    freeTranslation: string
+  ): string => {
+    const gla = this.sanitizeGlossString(transcription);
+    const glb = this.sanitizeGlossString(gloss);
+    const glft = this.sanitizeGlossString(freeTranslation);
+
+    return `\\pex[exno=${id}]
+  \\begingl
+  \\gla ${gla} //
+  \\glb ${glb} //
+  \\glft ${glft} //
+  \\endgl
+  \\xe
+
+  `;
+  };
+
+  private createLatexDocument = (glosses: string[]): string => {
+  const header = `\\documentclass{article}
+\\usepackage[margin=0.25in]{geometry}
+\\usepackage{expex}
+\\usepackage{fontspec}
+\\setmainfont{Noto Serif}
+
+\\begin{document}
+\\lingset{everygla={\\upshape}}
+
+\\begin{flushleft}
+    Student Name \\\\
+    Field Methods Transcript \\\\
+    \\today \\\\
+\\end{flushleft}
+\\vspace{5mm}
+
+`;
+
+  const footer = `\\end{document}`;
+
+  return `${header}${glosses.join('')}${footer}`;
+};
+
+  public generateLatexDocument(): string {
+    const glosses: string[] = [];
+
+    for (const row of this.rows) {
+      try {
+        const latexGloss = this.createLatexGloss(row.id, row.utterance, row.utteranceGloss, row.freeTranslation);
+        glosses.push(latexGloss);
+      } catch (err) {
+        console.error('Error generating LaTeX for row:', row, err);
+      }
+    }
+
+    return this.createLatexDocument(glosses);
+  }
+
+  generateGlossText(): string {
+    let text = '';
+
+    for (const row of this.rows) {
+      const concordance = this.toConcordance(row);
+
+      let alignedTranscription = '';
+      let alignedGloss = '';
+
+      for (const wordRow of concordance){
+
+        const maxWordLength = Math.max(this.textLength(wordRow.word), this.textLength(wordRow.wordGloss));
+          alignedTranscription += `${wordRow.word.padEnd(maxWordLength)}\t`;
+          alignedGloss += `${wordRow.wordGloss.padEnd(maxWordLength)}\t`;
+      }
+
+      text += `(${row.id})
+        ${alignedTranscription}
+        ${alignedGloss}
+        ${row.freeTranslation}\n\n`
+      }
+      return text;
+  }
+
+  private textLength(text: string): number {
+    const re = /(?<char>\P{Mark})(?<combiner>\p{Mark}+)/gu;
+    text = text.replace(re, `$1`);
+    return Array.from(text).length;
+  }
 }
