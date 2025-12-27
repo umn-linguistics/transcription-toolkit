@@ -145,7 +145,7 @@ export class Transcript {
 
   validateGlosses(): string[] {
     const misaligned: string[] = [];
-    
+
     for (const row of this.rows) {
       if (!validateGlossAlignment(row.utterance, row.utteranceGloss)) {
         misaligned.push(row.id);

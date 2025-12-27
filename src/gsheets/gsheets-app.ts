@@ -1,6 +1,9 @@
 
 import { GASSpreadsheetAdapter } from "./gas-spreadsheet-adapter";
 import { TranscriptSpreadsheet } from "../TranscriptSpreadsheet";
+import { ConcordanceRow } from "../types";
+import { GASStorageAdapter } from "./gas-storage-adapter";
+import { TranscriptStorage } from "../TranscriptStorage";
 
 /*
 *   Spreadsheet setup
@@ -16,6 +19,28 @@ export function createNewWorksheet() {
   // Show success message
   SpreadsheetApp.getUi()
     .alert(`Created new worksheet: ${sheetName}`);
+}
+
+export function generateWordList() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+  const transcriptStorage = new TranscriptStorage(storageAdapter);
+  
+  // Build concordance
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const concordanceData = transcript.concordance();
+  
+  // Write concordance to the word list spreadsheet
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  const folderId = storageAdapter.getCurrentFolderId();
+  const fileName = `word-list-${sheetName}`;
+  
+  transcriptStorage.createWordListSpreadsheet(concordanceData, folderId, fileName);
+
+  SpreadsheetApp.getUi()
+    .alert('Done!');
 }
 
 export function validateGraphemes() {
