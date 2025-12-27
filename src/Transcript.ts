@@ -3,12 +3,14 @@ import { validateGloss, validateGlossAlignment, validHeaders } from './validator
 import { Profile, TokenizeOptions, Tokenizer } from '@enfrank/segments-js';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
+//import { unparse } from 'papaparse';
 
 const SUPPORTED_HEADERS = Object.values(TranscriptColumns);
 
 export class Transcript {
   public headers: string[];
   public rows: TranscriptRow[] = [];
+  public raw: any[] = [];
   private idToRow: Map<string, number> = new Map<string, number>();
 
   constructor(headers: string[]) {
@@ -32,6 +34,7 @@ export class Transcript {
         speaker: row[this.headers.indexOf('speaker')]
       }));
     this.rows = rows;
+    this.raw = data;
     this.idToRow = new Map(this.rows.map((row, index) => [row.id, index]));
   }
 
@@ -279,5 +282,26 @@ export class Transcript {
     const re = /(?<char>\P{Mark})(?<combiner>\p{Mark}+)/gu;
     text = text.replace(re, `$1`);
     return Array.from(text).length;
+  }
+
+  // unparseAsCsv(): string {
+  //   // Extract values from the transcript and include the headers
+  //   const csvData = [this.headers, ...this.rows];
+  //   return unparse(csvData);
+  // }
+
+  private escapeCSV(value: any): string {
+    const str = String(value ?? '');
+    if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+      return `"${str.replace(/"/g, '""')}"`;
+    }
+    return str;
+  }
+
+  unparseAsCsv(): string {
+    const rows = [this.headers, ...this.raw];
+    return rows.map(row => 
+      Object.values(row).map(this.escapeCSV).join(',')
+    ).join('\n');
   }
 }

@@ -219,3 +219,25 @@ export function exportText() {
   SpreadsheetApp.getUi()
     .alert(`Done! Saved as ${fileName} in Google Drive.`);
 }
+
+export function exportCsv() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+
+  // Generate csv 
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const csvContent = transcript.unparseAsCsv();
+
+  // Save file
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  const fileName = `transcript-${sheetName}.csv`;
+  const folderId = storageAdapter.getCurrentFolderId();
+
+  const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
+  file.setContent(csvContent);
+
+  SpreadsheetApp.getUi()
+    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+}
