@@ -1,6 +1,5 @@
 /**
  * Google Apps Script adapter implementing spreadsheet and UI ports.
- * This is the "adapter" part of Ports and Adapters architecture.
  */
 
 import { ISpreadsheet, IUI } from '../interfaces/spreadsheet';

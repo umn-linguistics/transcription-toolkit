@@ -1,11 +1,23 @@
-import { clearValidations, createNewWorksheet, validateGlossAlignment, validateGraphemes, validateIDs, validateMorphemeLabels } from "./gsheets-app";
+import { 
+    clearValidations, 
+    createNewWorksheet, 
+    generateWordList, 
+    validateGlossAlignment, 
+    validateGraphemes, 
+    validateIDs, 
+    validateMorphemeLabels } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🧰 Transcript Tools')
-      .addItem('Create New Worksheet', 'createNewWorksheet')
-      .addSeparator()
+    //   .addItem('Create New Worksheet', 'createNewWorksheet')
+    //   .addItem('Create New Worksheet', 'createNewWorksheet')
+    //   .addSeparator()
+      .addSubMenu(ui.createMenu('Setup')
+        .addItem('Create New Worksheet', 'createNewWorksheet'))
+      .addSubMenu(ui.createMenu('Generate')
+        .addItem('Generate Word List', 'generateWordListMenuItem'))
       .addSubMenu(ui.createMenu('Validate')
         .addItem('Validate Characters', 'validateGraphemesMenuItem')
         .addItem('Validate IDs', 'validateIDsMenuItem')
@@ -22,6 +34,10 @@ function tryIt() {
 
 function createNewWorksheetMenuItem() {
     createNewWorksheet();
+}
+
+function generateWordListMenuItem() {
+    generateWordList();
 }
 
 function validateGraphemesMenuItem() {

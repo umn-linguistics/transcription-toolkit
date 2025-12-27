@@ -185,79 +185,93 @@ export class TranscriptSpreadsheet {
     return numRows;
   }
 
-updateTranscriptWithGlossAlignmentValidations(misalignedRowIds: string[], headers: string[]): number {
-    const transcriptRowCount = this.spreadsheet.getLastRow();
+  updateTranscriptWithGlossAlignmentValidations(misalignedRowIds: string[], headers: string[]): number {
+      const transcriptRowCount = this.spreadsheet.getLastRow();
 
-    if (transcriptRowCount < 2) {
-      return 0; // No data rows
-    }
+      if (transcriptRowCount < 2) {
+        return 0; // No data rows
+      }
 
-    const numRows = transcriptRowCount - 1; // Exclude header row
-    const transcriptionColIndex = headers.indexOf('ipa_transcription') + 1;
-    const glossColIndex = headers.indexOf('gloss') + 1;
+      const numRows = transcriptRowCount - 1; // Exclude header row
+      const transcriptionColIndex = headers.indexOf('ipa_transcription') + 1;
+      const glossColIndex = headers.indexOf('gloss') + 1;
 
-    // Build list of all cell background updates
-    const updates: Array<{row: number, col: number, color: string}> = [];
+      // Build list of all cell background updates
+      const updates: Array<{row: number, col: number, color: string}> = [];
 
-    // Get ID to row mapping
-    const idMap = this.spreadsheet.buildIdToRowMap(headers);
-    const misalignedIdsSet = new Set(misalignedRowIds.map(id => String(id)));
+      // Get ID to row mapping
+      const idMap = this.spreadsheet.buildIdToRowMap(headers);
+      const misalignedIdsSet = new Set(misalignedRowIds.map(id => String(id)));
 
-    // First, set all rows to white
-    for (let rowNum = 2; rowNum <= transcriptRowCount; rowNum++) {
-      updates.push(
-        { row: rowNum, col: transcriptionColIndex, color: 'white' },
-        { row: rowNum, col: glossColIndex, color: 'white' }
-      );
-    }
-
-    // Then, override misaligned rows with red
-    for (const [id, rowNum] of idMap) {
-      if (misalignedIdsSet.has(id)) {
-        // Find and update the white entries for this row
-        const transcriptionIndex = updates.findIndex(
-          u => u.row === rowNum && u.col === transcriptionColIndex
+      // First, set all rows to white
+      for (let rowNum = 2; rowNum <= transcriptRowCount; rowNum++) {
+        updates.push(
+          { row: rowNum, col: transcriptionColIndex, color: 'white' },
+          { row: rowNum, col: glossColIndex, color: 'white' }
         );
-        const glossIndex = updates.findIndex(
-          u => u.row === rowNum && u.col === glossColIndex
-        );
+      }
 
-        if (transcriptionIndex !== -1) {
-          updates[transcriptionIndex].color = '#eb9999';
-        }
-        if (glossIndex !== -1) {
-          updates[glossIndex].color = '#eb9999';
+      // Then, override misaligned rows with red
+      for (const [id, rowNum] of idMap) {
+        if (misalignedIdsSet.has(id)) {
+          // Find and update the white entries for this row
+          const transcriptionIndex = updates.findIndex(
+            u => u.row === rowNum && u.col === transcriptionColIndex
+          );
+          const glossIndex = updates.findIndex(
+            u => u.row === rowNum && u.col === glossColIndex
+          );
+
+          if (transcriptionIndex !== -1) {
+            updates[transcriptionIndex].color = '#eb9999';
+          }
+          if (glossIndex !== -1) {
+            updates[glossIndex].color = '#eb9999';
+          }
         }
       }
+
+      // Apply all updates in batch
+      this.spreadsheet.updateCellBackgrounds(updates);
+
+      return numRows;
     }
 
-    // Apply all updates in batch
-    this.spreadsheet.updateCellBackgrounds(updates);
+  setAllRowsToWhite(headers: string[]){
+      const transcriptRowCount = this.spreadsheet.getLastRow();
 
-    return numRows;
+      if (transcriptRowCount < 2) {
+        return 0; // No data rows
+      }
+
+      const numRows = transcriptRowCount - 1; // Exclude header row
+      const glossColIndex = headers.indexOf(TranscriptColumns.gloss) + 1;
+      const transcriptionColIndex = headers.indexOf(TranscriptColumns.transcription) + 1;
+      const idColIndex = headers.indexOf(TranscriptColumns.id) + 1;
+      const updates: Array<{row: number, col: number, color: string}> = [];
+      for (let rowNum = 2; rowNum <= transcriptRowCount; rowNum++) {
+        updates.push(
+          { row: rowNum, col: glossColIndex, color: 'white' },
+          { row: rowNum, col: transcriptionColIndex, color: 'white' },
+          { row: rowNum, col: idColIndex, color: 'white' },
+        );
+      }
+      this.spreadsheet.updateCellBackgrounds(updates);
+
+      return numRows;
   }
 
-setAllRowsToWhite(headers: string[]){
-    const transcriptRowCount = this.spreadsheet.getLastRow();
+  concordanceToArray(concordanceData: ConcordanceRow[]): any[][] {
+    const headers = ['id', 'word', 'word_gloss', 'ipa_transcription', 'ipa_transcription_gloss'];
+    const rows = concordanceData.map(row => [
+      row.id,
+      row.word,
+      row.wordGloss,
+      row.utterance,
+      row.utteranceGloss
+    ]);
 
-    if (transcriptRowCount < 2) {
-      return 0; // No data rows
-    }
-
-    const numRows = transcriptRowCount - 1; // Exclude header row
-    const glossColIndex = headers.indexOf(TranscriptColumns.gloss) + 1;
-    const transcriptionColIndex = headers.indexOf(TranscriptColumns.transcription) + 1;
-    const idColIndex = headers.indexOf(TranscriptColumns.id) + 1;
-    const updates: Array<{row: number, col: number, color: string}> = [];
-    for (let rowNum = 2; rowNum <= transcriptRowCount; rowNum++) {
-      updates.push(
-        { row: rowNum, col: glossColIndex, color: 'white' },
-        { row: rowNum, col: transcriptionColIndex, color: 'white' },
-        { row: rowNum, col: idColIndex, color: 'white' },
-      );
-    }
-    this.spreadsheet.updateCellBackgrounds(updates);
-
-    return numRows;
+    return [headers, ...rows];
   }
 }
+
