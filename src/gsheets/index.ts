@@ -5,7 +5,8 @@ import {
     validateGlossAlignment, 
     validateGraphemes, 
     validateIDs, 
-    validateMorphemeLabels } from "./gsheets-app";
+    validateMorphemeLabels,
+    showSelectedGlosses } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
@@ -14,6 +15,7 @@ function onOpen() {
     //   .addItem('Create New Worksheet', 'createNewWorksheet')
     //   .addItem('Create New Worksheet', 'createNewWorksheet')
     //   .addSeparator()
+      .addItem('Show glosses for selected rows', 'showSelectedGlossesMenuItem')
       .addSubMenu(ui.createMenu('Setup')
         .addItem('Create New Worksheet', 'createNewWorksheet'))
       .addSubMenu(ui.createMenu('Generate')
@@ -58,6 +60,10 @@ function validateGlossAlignmentMenuItem() {
 
 function clearValidationResultsMenuItem() {
     clearValidations();
+}
+
+function showSelectedGlossesMenuItem() {
+    showSelectedGlosses();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script
