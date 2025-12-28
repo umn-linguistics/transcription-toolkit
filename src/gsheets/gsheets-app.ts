@@ -298,11 +298,37 @@ export function processElanFiles(selectedFileIds: string[], elanIdTierName: stri
   });
 
   // return `Processed ${fileCount} file(s).`;
-  return `Found ${rowCount} ELAN rows to update from ${fileCount} file ${rowCount > 1 ? '(s)' : ''}.`
+  return `Found ${rowCount} ELAN rows to update from ${fileCount} file${rowCount > 1 ? 's' : ''}.`
 }
 
 export function getDriveFiles() {
   const storageAdapter = new GASStorageAdapter();
   const folderId = storageAdapter.getCurrentFolderId();
   return storageAdapter.listFiles(folderId);
+}
+
+export function exportCsvBySpeaker() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  // Get transcripts by speaker
+  const speakerTranscripts = transcript.bySpeaker();
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  let fileCount = 0;
+
+  // Save each transcript as a csv file
+  for (let speakerTranscript of speakerTranscripts) {
+    const csvContent = speakerTranscript.unparseAsCsv();
+    const fileName = `transcript-${sheetName}-speaker-${speakerTranscript.speaker}.csv`;
+    const folderId = storageAdapter.getCurrentFolderId();
+    const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
+    file.setContent(csvContent);
+    fileCount += 1;
+  }
+
+  SpreadsheetApp.getUi()
+    .alert(`Done! Saved ${fileCount} speaker file${fileCount > 1 ? 's' : ''} to Google Drive.`);
 }

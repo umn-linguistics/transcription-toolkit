@@ -10,6 +10,7 @@ export class Transcript {
   public headers: string[];
   public rows: TranscriptRow[] = [];
   public idToRow: Map<string, number> = new Map<string, number>();
+  public speaker: string = '';
 
   constructor(headers: string[]) {
     this.headers = validHeaders(headers, Object.values(TranscriptColumns));
@@ -325,5 +326,29 @@ export class Transcript {
       }
     }
     return updatedTranscriptRows;
+  }
+
+  public bySpeaker(): Transcript[] {
+    // Group rows by speaker
+    const rowsBySpeaker = new Map<string, any[]>();
+
+    this.rows.forEach(row => {
+      const speaker = row.speaker === '' ? 'blank' : row.speaker;
+      if (!rowsBySpeaker.has(speaker)) {
+        rowsBySpeaker.set(speaker, []);
+      }
+      rowsBySpeaker.get(speaker)!.push(row);
+    });
+
+    let speakerTranscripts: Transcript[] = [];
+
+    rowsBySpeaker.forEach((speakerRows, speaker) => {
+      const speakerTranscript = new Transcript(this.headers);
+      speakerTranscript.load(speakerRows.map(rows => rows.raw));
+      speakerTranscript.speaker = speaker;
+      speakerTranscripts.push(speakerTranscript);
+    });
+
+    return speakerTranscripts;
   }
 }

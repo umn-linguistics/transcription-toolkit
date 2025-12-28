@@ -12,7 +12,8 @@ import {
     exportCsv,
     showElanFilePicker,
     processElanFiles,
-    getDriveFiles
+    getDriveFiles,
+    exportCsvBySpeaker
  } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
@@ -35,8 +36,8 @@ function onOpen() {
       .addSubMenu(ui.createMenu('Export')
         .addItem('Export as LaTeX', 'exportLatexMenuItem')
         .addItem('Export as TXT', 'exportTextMenuItem')
-        .addItem('Export as CSV', 'exportCsvMenuItem'))
-        //.addItem('Export as CSV by speaker', 'exportElanCsvBySpeakerMenuItem'))
+        .addItem('Export as CSV', 'exportCsvMenuItem')
+        .addItem('Export as CSV by speaker', 'exportElanCsvBySpeakerMenuItem'))
       .addToUi();
 }
 
@@ -99,6 +100,10 @@ function processElanFilesTemplateCall(selectedFileIds: string[], elanIdTierName:
 
 function getDriveFilesTemplateCall() {
   return getDriveFiles();
+}
+
+function exportElanCsvBySpeakerMenuItem() {
+  exportCsvBySpeaker();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script
