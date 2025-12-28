@@ -1,20 +1,18 @@
-import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, MorphemeColumns, Transcription } from './types';
+import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, MorphemeColumns, Transcription, ElanColumns } from './types';
 import { validateGloss, validateGlossAlignment, validHeaders } from './validators';
 import { Profile, TokenizeOptions, Tokenizer } from '@enfrank/segments-js';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
+import { Elan } from './Elan';
 //import { unparse } from 'papaparse';
-
-const SUPPORTED_HEADERS = Object.values(TranscriptColumns);
 
 export class Transcript {
   public headers: string[];
   public rows: TranscriptRow[] = [];
-  public raw: any[] = [];
-  private idToRow: Map<string, number> = new Map<string, number>();
+  public idToRow: Map<string, number> = new Map<string, number>();
 
   constructor(headers: string[]) {
-    this.headers = validHeaders(headers, SUPPORTED_HEADERS);
+    this.headers = validHeaders(headers, Object.values(TranscriptColumns));
   }
 
   getColumnIndex(columnName: string): number {
@@ -22,7 +20,7 @@ export class Transcript {
   }
 
   public load(data: any[]) {
-    const rows: TranscriptRow[] = data.map((row) => ({
+    const rows: TranscriptRow[] = data.map((row: any[]) => ({
         id: row[this.headers.indexOf('id')],
         utterance: row[this.headers.indexOf('ipa_transcription')],
         utteranceGloss: row[this.headers.indexOf('gloss')],
@@ -31,10 +29,10 @@ export class Transcript {
         scribe: row[this.headers.indexOf('scribe')],
         date: row[this.headers.indexOf('date')],
         group: row[this.headers.indexOf('group')],
-        speaker: row[this.headers.indexOf('speaker')]
+        speaker: row[this.headers.indexOf('speaker')],
+        raw: row
       }));
     this.rows = rows;
-    this.raw = data;
     this.idToRow = new Map(this.rows.map((row, index) => [row.id, index]));
   }
 
@@ -299,9 +297,33 @@ export class Transcript {
   }
 
   unparseAsCsv(): string {
-    const rows = [this.headers, ...this.raw];
+    // To support the addition of unmanaged columns, return the original raw
+    // data aligned to the original headers. 
+    const rows = [this.headers, ...this.rows.map(row => row.raw as any[])];
     return rows.map(row => 
-      Object.values(row).map(this.escapeCSV).join(',')
+      row.map(this.escapeCSV).join(',')
     ).join('\n');
+  }
+
+  public loadElan(elan: Elan): TranscriptRow[] {
+    let updatedTranscriptRows: TranscriptRow[] = [];
+    for (let elanRow of elan.rows) {
+      for (let transcriptRow of this.rows) {
+        if (String(elanRow.id) == String(transcriptRow.id)) {
+          transcriptRow.beginTime = elanRow.beginTime;
+          transcriptRow.endTime = elanRow.endTime;
+          // To support the addition of unmanaged columns, update the original raw
+          // to handle csv export.
+          if (transcriptRow.raw){
+            if (transcriptRow.raw) {
+              transcriptRow.raw[this.getColumnIndex(ElanColumns.begin_time)] = elanRow.beginTime;
+              transcriptRow.raw[this.getColumnIndex(ElanColumns.end_time)] = elanRow.endTime;
+            }
+          }
+          updatedTranscriptRows.push(transcriptRow);
+        }
+      }
+    }
+    return updatedTranscriptRows;
   }
 }

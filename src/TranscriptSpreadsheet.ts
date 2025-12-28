@@ -286,5 +286,23 @@ export class TranscriptSpreadsheet {
 
     return [headers, ...rows];
   }
+
+  updateWithElanData(
+    elanData: TranscriptRow[],
+    transcript: Transcript
+  ): void {
+    const beginTimeCol = transcript.headers.indexOf('begin_time') + 1;
+    const endTimeCol = transcript.headers.indexOf('end_time') + 1;
+    const durationCol = transcript.headers.indexOf('duration') + 1;
+    for (const elanRow of elanData) {
+      const rowNum = transcript.idToRow.get(elanRow.id);
+       if (rowNum !== undefined && Number(rowNum)) {
+        const spreadsheetRowNum = rowNum + 2; // account for spreadsheet index starting at 1 and header row
+        this.spreadsheet.updateCell(spreadsheetRowNum, beginTimeCol, elanRow.beginTime);
+        this.spreadsheet.updateCell(spreadsheetRowNum, endTimeCol, elanRow.endTime);
+        this.spreadsheet.updateCell(spreadsheetRowNum, durationCol, elanRow.duration);
+      }
+    }
+  }
 }
 

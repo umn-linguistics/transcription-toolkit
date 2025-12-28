@@ -3,7 +3,6 @@ import { validHeaders } from './validators';
 import { Profile } from '@enfrank/segments-js';
 import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@enfrank/segments-js';
 
-const SUPPORTED_HEADERS = Object.values(MorphemeColumns);
 
 export class Gloss {
   public rows: MorphemeRow[] = [];
@@ -11,7 +10,7 @@ export class Gloss {
   public validMorphemeLabels: string[] = [];
 
   constructor(headers: string[]) {
-    this.headers = validHeaders(headers, SUPPORTED_HEADERS);
+    this.headers = validHeaders(headers, Object.values(MorphemeColumns));
   }
 
   public load(data: any[]) {

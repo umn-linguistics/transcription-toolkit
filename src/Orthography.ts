@@ -3,7 +3,6 @@ import { validHeaders } from './validators';
 import { Profile } from '@enfrank/segments-js';
 import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@enfrank/segments-js';
 
-const SUPPORTED_HEADERS = Object.values(GraphemeColumns);
 
 export class Orthography {
   public graphemes: GraphemeRow[] = [];
@@ -11,7 +10,7 @@ export class Orthography {
   public profile: Profile = new Profile([]);
 
   constructor(headers: string[]) {
-    this.headers = validHeaders(headers, SUPPORTED_HEADERS);
+    this.headers = validHeaders(headers, Object.values(GraphemeColumns));
   }
 
   public load(data: any[]) {

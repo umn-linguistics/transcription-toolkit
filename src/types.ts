@@ -10,7 +10,8 @@ export interface TranscriptRow {
     group: string,
     beginTime?: string,
     endTime?: string,
-    duration?: string
+    duration?: string,
+    raw?: string[]
   }
 
 export interface Transcript {
@@ -39,6 +40,12 @@ export interface ElanRow {
   endTime: string,
   duration: string,
   id: string
+}
+
+export enum ElanColumns {
+  begin_time = 'Begin Time - ss.msec',
+  end_time = 'End Time - ss.msec',
+  duration = 'Duration - ss.msec'
 }
 
 export enum GraphemeColumns {

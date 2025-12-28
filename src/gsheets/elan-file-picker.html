@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body { font-family: 'Arial', sans-serif; margin: 10px; }
+    .file-list { margin-top: 15px; }
+    .file-item { margin-bottom: 5px; }
+    .tier-input { margin-top: 15px; }
+    input { margin-top: 10px; padding: 8px 15px; }
+    button { margin-top: 10px; padding: 8px 15px; }
+  </style>
+</head>
+<body>
+  <p>Select one or more ELAN data export files. These should be tab-delimited and contain a field named 'default' that contains id values corresponding to the spreadsheet 'id' column.</p>
+  <div class="file-list" id="fileListContainer"></div>
+  <div class="tier-input"></div>
+    <p>Enter the name of the tier in ELAN that stores the IDs for each annotation:</p>
+    <input type="text" id="elanIdTierName" placeholder="default">
+    <button onclick="processSelectedFiles()">Process Selected</button>
+  </div>
+  <script>
+    function populateFileList(files) {
+      const container = document.getElementById('fileListContainer');
+      container.innerHTML = '';
+      files.forEach(file => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.innerHTML = `<label>
+                           <input type="checkbox" name="selectedFiles" value="${file.id}">
+                           ${file.name}
+                         </label>`;
+        container.appendChild(div);
+      });
+    }
+
+    function processSelectedFiles() {
+      const checkboxes = document.querySelectorAll('input[name="selectedFiles"]:checked');
+      const elanIdTierName = document.getElementById('elanIdTierName').value;
+      const selectedFileIds = Array.from(checkboxes).map(cb => cb.value);
+      google.script.run
+        .withSuccessHandler(function(result) {
+          alert(result);
+          google.script.host.close();
+        })
+        .processElanFilesTemplateCall(selectedFileIds, elanIdTierName);
+    }
+
+    // Call Apps Script function to get files when the page loads
+    google.script.run.withSuccessHandler(populateFileList).getDriveFiles();
+  </script>
+</body>
+</html>
