@@ -9,7 +9,11 @@ import {
     showSelectedGlosses,
     exportLatex,
     exportText,
-    exportCsv } from "./gsheets-app";
+    exportCsv,
+    showElanFilePicker,
+    processElanFiles,
+    getDriveFiles
+ } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
 function onOpen() {
@@ -26,6 +30,8 @@ function onOpen() {
         .addItem('Validate Gloss Labels', 'validateMorphemeLabelsMenuItem')
         .addItem('Validate Gloss Alignment', 'validateGlossAlignmentMenuItem')
         .addItem('Clear Validation Results', 'clearValidationResultsMenuItem'))
+      .addSubMenu(ui.createMenu('Import')
+        .addItem('Import from Elan', 'showElanFilePickerMenuItem'))
       .addSubMenu(ui.createMenu('Export')
         .addItem('Export as LaTeX', 'exportLatexMenuItem')
         .addItem('Export as TXT', 'exportTextMenuItem')
@@ -81,6 +87,18 @@ function exportTextMenuItem() {
 
 function exportCsvMenuItem() {
     exportCsv();
+}
+
+function showElanFilePickerMenuItem() {
+  showElanFilePicker();
+}
+
+function processElanFilesTemplateCall(selectedFileIds: string[], elanIdTierName: string): string {
+  return processElanFiles(selectedFileIds, elanIdTierName);
+}
+
+function getDriveFilesTemplateCall() {
+  return getDriveFiles();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script

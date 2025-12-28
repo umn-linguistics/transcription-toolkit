@@ -1,5 +1,6 @@
 import { Transcript } from './Transcript';
-import { TranscriptColumns } from './types';
+import { Elan } from './Elan';
+import { TranscriptColumns, ElanColumns } from './types';
 import { Profile } from '@enfrank/segments-js';
 //const Transcript = require('./Transcript');
 
@@ -110,4 +111,152 @@ test('validateGraphemes handles multi-character graphemes', () => {
   const result = transcript.validateGraphemes(profile);
 
   expect(result).toEqual([]);
+});
+
+describe('loadElan', () => {
+  test('updates transcript rows with Elan timing data', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    // Load transcript with some rows
+    const transcriptData = [
+      ['1', 'hello', 'GREETING', 'hello', '', '', '', '', ''],
+      ['2', 'world', 'NOUN', 'world', '', '', '', '', ''],
+      ['3', 'test', 'NOUN', 'test', '', '', '', '', '']
+    ];
+    transcript.load(transcriptData);
+
+    // Create Elan data with timing information
+    const elan = new Elan('id');
+    elan.rows = [
+      { id: '1', beginTime: '0.000', endTime: '1.500', duration: '1.500' },
+      { id: '2', beginTime: '1.500', endTime: '3.000', duration: '1.500' }
+    ];
+
+    // Load Elan data into transcript
+    const updatedRows = transcript.loadElan(elan);
+
+    // Should return only the rows that matched Elan data
+    expect(updatedRows).toHaveLength(2);
+
+    // Check that timing data was added to the transcript rows
+    const row1 = transcript.rows.find(row => row.id === '1');
+    expect(row1?.beginTime).toBe('0.000');
+    expect(row1?.endTime).toBe('1.500');
+
+    const row2 = transcript.rows.find(row => row.id === '2');
+    expect(row2?.beginTime).toBe('1.500');
+    expect(row2?.endTime).toBe('3.000');
+
+    // Row 3 should not have timing data
+    const row3 = transcript.rows.find(row => row.id === '3');
+    expect(row3?.beginTime).toBeUndefined();
+    expect(row3?.endTime).toBeUndefined();
+  });
+
+  test('updates raw array with timing data for CSV export', () => {
+    const headers = [...Object.values(TranscriptColumns), ElanColumns.begin_time, ElanColumns.end_time];
+    const transcript = new Transcript(headers);
+
+    // Load transcript with raw data
+    const transcriptData = [
+      ['1', 'hello', 'GREETING', 'hello', '', '', '', '', '', '', '']
+    ];
+    transcript.load(transcriptData);
+
+    // Create Elan data
+    const elan = new Elan('id');
+    elan.rows = [
+      { id: '1', beginTime: '0.000', endTime: '1.500', duration: '1.500' }
+    ];
+
+    // Load Elan data
+    transcript.loadElan(elan);
+
+    // Check that raw data was updated
+    const row = transcript.rows[0];
+    const beginTimeIdx = transcript.getColumnIndex(ElanColumns.begin_time);
+    const endTimeIdx = transcript.getColumnIndex(ElanColumns.end_time);
+
+    expect(row.raw?.[beginTimeIdx]).toBe('0.000');
+    expect(row.raw?.[endTimeIdx]).toBe('1.500');
+  });
+
+  test('handles transcript rows without raw data', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    // Manually create rows without raw data
+    transcript.rows = [
+      {
+        id: '1',
+        utterance: 'hello',
+        utteranceGloss: 'GREETING',
+        freeTranslation: 'hello',
+        note: '',
+        speaker: '',
+        scribe: '',
+        date: '',
+        group: ''
+      }
+    ];
+
+    // Create Elan data
+    const elan = new Elan('id');
+    elan.rows = [
+      { id: '1', beginTime: '0.000', endTime: '1.500', duration: '1.500' }
+    ];
+
+    // Should not throw error even when raw is undefined
+    expect(() => transcript.loadElan(elan)).not.toThrow();
+
+    // Check that timing properties were still added
+    expect(transcript.rows[0].beginTime).toBe('0.000');
+    expect(transcript.rows[0].endTime).toBe('1.500');
+  });
+
+  test('returns empty array when no Elan rows match transcript IDs', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      ['1', 'hello', 'GREETING', 'hello', '', '', '', '', '']
+    ];
+    transcript.load(transcriptData);
+
+    // Create Elan data with non-matching IDs
+    const elan = new Elan('id');
+    elan.rows = [
+      { id: '999', beginTime: '0.000', endTime: '1.500', duration: '1.500' }
+    ];
+
+    const updatedRows = transcript.loadElan(elan);
+
+    expect(updatedRows).toHaveLength(0);
+  });
+
+  test('handles multiple Elan rows matching the same transcript ID', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      ['1', 'hello', 'GREETING', 'hello', '', '', '', '', '']
+    ];
+    transcript.load(transcriptData);
+
+    // Create Elan data with duplicate IDs
+    const elan = new Elan('id');
+    elan.rows = [
+      { id: '1', beginTime: '0.000', endTime: '1.500', duration: '1.500' },
+      { id: '1', beginTime: '2.000', endTime: '3.500', duration: '1.500' }
+    ];
+
+    const updatedRows = transcript.loadElan(elan);
+
+    // Should return 2 entries (one for each Elan row match)
+    expect(updatedRows).toHaveLength(2);
+
+    // The transcript row should have the timing from the last match
+    expect(transcript.rows[0].endTime).toBe('3.500');
+  });
 });

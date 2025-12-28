@@ -61,4 +61,9 @@ export interface IStorage {
    * Parse CSV string to 2D array
    */
   parseCsv(content: string, delimiter: string): string[][];
+
+  /**
+   * Get file by id and return content as string
+   */
+  getFileById(fileId: string): string;
 }

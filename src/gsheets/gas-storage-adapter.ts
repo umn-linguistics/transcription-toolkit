@@ -167,4 +167,9 @@ export class GASStorageAdapter implements IStorage {
   parseCsv(content: string, delimiter: string): string[][] {
     return Utilities.parseCsv(content, delimiter);
   }
+
+  getFileById(fileId: string): string {
+    const file = DriveApp.getFileById(fileId);
+    return file.getBlob().getDataAsString();
+  }
 }

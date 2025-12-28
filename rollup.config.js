@@ -78,7 +78,7 @@ function createHtmlBundleConfig(files) {
 
 export default [
   // Process HTML files but exclude template files (they contain scriptlets that shouldn't be transformed)
-  ...createHtmlBundleConfig('src/*.html').filter(config => !config.input.includes('-template.html')),
+  ...createHtmlBundleConfig('src/gsheets/*.html').filter(config => !config.input.includes('-template.html')),
   {
   //input: ["./src/index.ts", "./src/bundle.js"],
   input: ["./src/gsheets/index.ts"],

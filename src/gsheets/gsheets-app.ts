@@ -5,6 +5,7 @@ import { ConcordanceRow } from "../types";
 import { GASStorageAdapter } from "./gas-storage-adapter";
 import { GASUIAdapter } from "./gas-ui-adapter";
 import { TranscriptStorage } from "../TranscriptStorage";
+import { Elan } from "../Elan";
 
 /*
 *   Spreadsheet setup
@@ -240,4 +241,68 @@ export function exportCsv() {
 
   SpreadsheetApp.getUi()
     .alert(`Done! Saved as ${fileName} in Google Drive.`);
+}
+
+export function showElanFilePicker() {
+  // Create UI adapter
+  const uiAdapter = new GASUIAdapter();
+
+  // Show the file picker dialog
+  const htmlOutput = HtmlService.createHtmlOutputFromFile('elan-file-picker')
+    .setWidth(400)
+    .setHeight(300);
+
+  uiAdapter.showModalDialog(htmlOutput.getContent(), 'Select Files');
+}
+
+export function processElanFiles(selectedFileIds: string[], elanIdTierName: string): string {
+  // Validate input
+  if (!elanIdTierName || elanIdTierName === '') {
+    return 'First enter the name of the ID tier in ELAN';
+  }
+
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  // Process each file
+  let fileCount = 0;
+  let rowCount = 0;
+  selectedFileIds.forEach(fileId => {
+    fileCount++;
+
+    const file = storageAdapter.getFileById(fileId);
+    Logger.log(`file = ${file}`);
+    // Parse CSV using storage adapter
+    const fileData = storageAdapter.parseCsv(file, '\t');
+    Logger.log(`fileData = ${fileData}`);
+    Logger.log(`fileData.length = ${fileData.length}`);
+    const elan = new Elan(elanIdTierName);
+    elan.load(fileData);
+    Logger.log(`elan.rows.length = ${elan.rows.length}`);
+    Logger.log(`elan.rows = ${elan.rows}`);
+    for (let row of elan.rows){
+      Logger.log(`elan row id = ${row.id}`);
+    }
+    for (let row of transcript.rows){
+      Logger.log(`transcript row id = ${row.id}`);
+    }
+    const elanUpdates = transcript.loadElan(elan);
+    Logger.log(`elanIdTierName = ${elanIdTierName}`);
+    Logger.log(`gsheets-app.elanUpdates = ${elanUpdates}`);
+    rowCount += elanUpdates.length;
+    Logger.log(`gsheets-app.rowCount = ${rowCount}`);
+    transcriptSpreadsheet.updateWithElanData(elanUpdates, transcript);
+  });
+
+  // return `Processed ${fileCount} file(s).`;
+  return `Found ${rowCount} ELAN rows to update from ${fileCount} file ${rowCount > 1 ? '(s)' : ''}.`
+}
+
+export function getDriveFiles() {
+  const storageAdapter = new GASStorageAdapter();
+  const folderId = storageAdapter.getCurrentFolderId();
+  return storageAdapter.listFiles(folderId);
 }
