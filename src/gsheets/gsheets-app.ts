@@ -1,11 +1,13 @@
 
 import { GASSpreadsheetAdapter } from "./gas-spreadsheet-adapter";
 import { TranscriptSpreadsheet } from "../TranscriptSpreadsheet";
-import { ConcordanceRow } from "../types";
+import { ConcordanceRow, GraphemeColumns, MorphemeColumns } from "../types";
 import { GASStorageAdapter } from "./gas-storage-adapter";
 import { GASUIAdapter } from "./gas-ui-adapter";
 import { TranscriptStorage } from "../TranscriptStorage";
 import { Elan } from "../Elan";
+import { TranscriptColumns } from "../types";
+import { SHEET_NAMES } from "../interfaces/constants";
 
 /*
 *   Spreadsheet setup
@@ -13,10 +15,40 @@ import { Elan } from "../Elan";
 export function createNewWorksheet() {
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
-  const transcript = transcriptSpreadsheet.getTranscriptData();
+  //const transcript = transcriptSpreadsheet.getTranscriptData();
+
+  const defaultHeaders = Object.values(TranscriptColumns);
 
   // Create the worksheet
-  const sheetName = transcriptSpreadsheet.createTranscriptSheet(transcript.headers);
+  const sheetName = transcriptSpreadsheet.createTranscriptSheet(defaultHeaders);
+
+  // Show success message
+  SpreadsheetApp.getUi()
+    .alert(`Created new worksheet: ${sheetName}`);
+}
+
+export function createGlossAbbrevationsSheet() {
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+
+  const defaultHeaders = Object.values(MorphemeColumns);
+
+  // Create the worksheet
+  const sheetName = transcriptSpreadsheet.createSettingsSheet(defaultHeaders, SHEET_NAMES.MORPHEME_TAGS);
+
+  // Show success message
+  SpreadsheetApp.getUi()
+    .alert(`Created new worksheet: ${sheetName}`);
+}
+
+export function createCharactersSheet() {
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+
+  const defaultHeaders = Object.values(GraphemeColumns);
+
+  // Create the worksheet
+  const sheetName = transcriptSpreadsheet.createSettingsSheet(defaultHeaders, SHEET_NAMES.GRAPHEME_PROFILE);
 
   // Show success message
   SpreadsheetApp.getUi()

@@ -49,7 +49,7 @@ export enum ElanColumns {
 }
 
 export enum GraphemeColumns {
-  grapheme = 'grapheme'
+  grapheme = 'character'
 }
 
 export interface Graphemes {
@@ -68,7 +68,7 @@ export interface MorphemeRow {
 }
 
 export enum MorphemeColumns {
-  morpheme = 'morpheme_tag'
+  morpheme = 'gloss_abbreviation'
 }
 
 export interface Morphemes {

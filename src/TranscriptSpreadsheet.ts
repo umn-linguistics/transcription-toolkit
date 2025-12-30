@@ -50,6 +50,20 @@ export class TranscriptSpreadsheet {
     return newSheetName;
   }
 
+  createSettingsSheet(columnHeaders: string[], sheetName: string){
+      // Get existing sheet names
+    const existingNames = this.spreadsheet.getSheetNames();
+
+    if (existingNames.includes(sheetName)){
+      throw new Error(`Sheet ${sheetName} already exists.`);
+    }
+
+    // Create the sheet with headers
+    this.spreadsheet.createSheet(sheetName, columnHeaders);
+
+    return sheetName;  
+  }
+
   createTranscriptSheet(columnHeaders: string[], baseName: string = 'TranscriptSheet'): string {
     // Get existing sheet names
     const existingNames = this.spreadsheet.getSheetNames();
