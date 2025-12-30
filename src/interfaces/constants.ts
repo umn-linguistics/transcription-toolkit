@@ -10,8 +10,8 @@ export const COLORS = {
 
 export const SHEET_NAMES = {
   DEFAULT_BASE: 'TranscriptSheet',
-  GRAPHEME_PROFILE: 'Graphemes',
-  MORPHEME_TAGS: 'Morphemes'
+  GRAPHEME_PROFILE: 'Characters',
+  MORPHEME_TAGS: 'GlossAbbreviations'
 } as const;
 
 export const MIME_TYPES = {

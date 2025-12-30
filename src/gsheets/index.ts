@@ -13,7 +13,9 @@ import {
     showElanFilePicker,
     processElanFiles,
     getDriveFiles,
-    exportCsvBySpeaker
+    exportCsvBySpeaker,
+    createGlossAbbrevationsSheet,
+    createCharactersSheet
  } from "./gsheets-app";
 
 // @ts-ignore - Called by Google Apps Script
@@ -21,10 +23,11 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🧰 Transcript Tools')
       .addItem('Show glosses for selected rows', 'showSelectedGlossesMenuItem')
+      .addItem('Generate Word List', 'generateWordListMenuItem')
       .addSubMenu(ui.createMenu('Setup')
-        .addItem('Create New Worksheet', 'createNewWorksheet'))
-      .addSubMenu(ui.createMenu('Generate')
-        .addItem('Generate Word List', 'generateWordListMenuItem'))
+        .addItem('Create New Transcript Sheet', 'createNewWorksheetMenuItem')
+        .addItem('Create New GlossAbbreviations Sheet', 'createGlossAbbrevationsSheetMenuItem')
+        .addItem('Create New Characters Sheet', 'createNewCharactersSheetMenuItem'))
       .addSubMenu(ui.createMenu('Validate')
         .addItem('Validate Characters', 'validateGraphemesMenuItem')
         .addItem('Validate IDs', 'validateIDsMenuItem')
@@ -48,6 +51,14 @@ function tryIt() {
 
 function createNewWorksheetMenuItem() {
     createNewWorksheet();
+}
+
+function createGlossAbbrevationsSheetMenuItem() {
+    createGlossAbbrevationsSheet();
+}
+
+function createNewCharactersSheetMenuItem() {
+    createCharactersSheet();
 }
 
 function generateWordListMenuItem() {

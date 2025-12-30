@@ -52,4 +52,3 @@ export class TranscriptStorage {
     wordSheet.setFrozenRows(1);
   }
 }
-
