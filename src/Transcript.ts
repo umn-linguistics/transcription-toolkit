@@ -313,12 +313,14 @@ export class Transcript {
         if (String(elanRow.id) == String(transcriptRow.id)) {
           transcriptRow.beginTime = elanRow.beginTime;
           transcriptRow.endTime = elanRow.endTime;
+          transcriptRow.duration = elanRow.duration;
           // To support the addition of unmanaged columns, update the original raw
           // to handle csv export.
           if (transcriptRow.raw){
             if (transcriptRow.raw) {
               transcriptRow.raw[this.getColumnIndex(ElanColumns.begin_time)] = elanRow.beginTime;
               transcriptRow.raw[this.getColumnIndex(ElanColumns.end_time)] = elanRow.endTime;
+              transcriptRow.raw[this.getColumnIndex(ElanColumns.duration)] = elanRow.duration;
             }
           }
           updatedTranscriptRows.push(transcriptRow);

@@ -310,7 +310,7 @@ export class TranscriptSpreadsheet {
     const durationCol = transcript.headers.indexOf('duration') + 1;
     for (const elanRow of elanData) {
       const rowNum = transcript.idToRow.get(elanRow.id);
-       if (rowNum !== undefined && Number(rowNum)) {
+       if (rowNum !== undefined && Number(rowNum) >= 0) {
         const spreadsheetRowNum = rowNum + 2; // account for spreadsheet index starting at 1 and header row
         this.spreadsheet.updateCell(spreadsheetRowNum, beginTimeCol, elanRow.beginTime);
         this.spreadsheet.updateCell(spreadsheetRowNum, endTimeCol, elanRow.endTime);

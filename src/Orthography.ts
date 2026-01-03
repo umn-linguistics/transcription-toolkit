@@ -15,7 +15,7 @@ export class Orthography {
 
   public load(data: any[]) {
     const rows: GraphemeRow[] = data.map((row) => ({
-        grapheme: row[this.headers.indexOf('grapheme')]
+        grapheme: row[this.headers.indexOf(GraphemeColumns.grapheme)]
       }));
     this.graphemes = rows;
     this.setProfile();
