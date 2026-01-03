@@ -3,7 +3,6 @@ import { validHeaders } from './validators';
 import { Profile } from '@enfrank/segments-js';
 import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@enfrank/segments-js';
 
-
 export class Gloss {
   public rows: MorphemeRow[] = [];
   public headers: string[];
@@ -15,7 +14,7 @@ export class Gloss {
 
   public load(data: any[]) {
     const rows: MorphemeRow[] = data.map((row) => ({
-        morpheme_tag: row[this.headers.indexOf('morpheme_tag')]
+        morpheme_tag: row[this.headers.indexOf(MorphemeColumns.morpheme)]
       }));
     this.rows = rows;
     this.validMorphemeLabels = this.rows.map(row => row.morpheme_tag)
