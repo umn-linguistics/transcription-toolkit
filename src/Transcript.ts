@@ -253,7 +253,7 @@ export class Transcript {
     return this.createLatexDocument(glosses);
   }
 
-  generateGlossText(): string {
+  public generateGlossText(): string {
     let text = '';
 
     for (const row of this.rows) {
@@ -281,7 +281,7 @@ export class Transcript {
     // find each letter followed by one or more combining marks
     const re = /(\p{Letter})(\p{Mark}+)/gu;
     // replace with a blank space
-    text = text.replace(re, ' '); 
+    text = text.replace(re, ' ');
     // find the length of the string without combining marks
     return Array.from(text).length;
   }

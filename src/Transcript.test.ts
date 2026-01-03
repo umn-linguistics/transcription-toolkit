@@ -260,3 +260,133 @@ describe('loadElan', () => {
     expect(transcript.rows[0].endTime).toBe('3.500');
   });
 });
+
+describe('generateGlossText', () => {
+  test('generates aligned text glosses with Gitksan data', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      [
+        '1',
+        'Ii hasak̲t dimt mehlihl wila wilt win yukwhl silinasxwt.',
+        'CCNJ want-3.II PROSP-3.I tell-T-CN MANR LVB-3.II COMP IPFV-CN hunt-ANTIP-3.II',
+        'He wants to tell the story of when he was hunting.',
+        '',
+        '',
+        '',
+        '',
+        ''
+      ]
+    ];
+
+    transcript.load(transcriptData);
+    const result = transcript.generateGlossText();
+
+    // Check that the output contains the ID
+    expect(result).toContain('(1)');
+
+    // Check that the output contains the free translation
+    expect(result).toContain('He wants to tell the story of when he was hunting.');
+
+    // Check that words are aligned (should have tab-separated columns)
+    expect(result).toContain('\t');
+
+    // Check that output has multiple lines (transcription line, gloss line, translation)
+    const lines = result.trim().split('\n').filter(line => line.trim());
+    expect(lines.length).toBeGreaterThanOrEqual(3);
+  });
+
+  test('generates aligned text with proper word alignment', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      [
+        '1',
+        'the cat',
+        'DET N',
+        'the cat',
+        '',
+        '',
+        '',
+        '',
+        ''
+      ]
+    ];
+
+    transcript.load(transcriptData);
+    const result = transcript.generateGlossText();
+
+    // Both words should be present
+    expect(result).toContain('the');
+    expect(result).toContain('cat');
+    expect(result).toContain('DET');
+    expect(result).toContain('N');
+  });
+
+  test('handles multiple utterances', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      ['1', 'hello world', 'greeting earth', 'hello world', '', '', '', '', ''],
+      ['2', 'goodbye friend', 'farewell companion', 'goodbye friend', '', '', '', '', '']
+    ];
+
+    transcript.load(transcriptData);
+    const result = transcript.generateGlossText();
+
+    // Check that both IDs are present
+    expect(result).toContain('(1)');
+    expect(result).toContain('(2)');
+
+    // Check that both translations are present
+    expect(result).toContain('hello world');
+    expect(result).toContain('goodbye friend');
+  });
+
+  test('handles empty utterance gracefully', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const transcriptData = [
+      ['1', '', '', 'empty utterance', '', '', '', '', '']
+    ];
+
+    transcript.load(transcriptData);
+    const result = transcript.generateGlossText();
+
+    // Should still contain the ID and translation
+    expect(result).toContain('(1)');
+    expect(result).toContain('empty utterance');
+  });
+
+  test('preserves combining marks in character length calculation', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    // Gitksan data with combining marks (K̲, a̲, etc.)
+    const transcriptData = [
+      [
+        '1',
+        'K̲ʼay yukwhl',
+        'still IPFV-CN',
+        'still',
+        '',
+        '',
+        '',
+        '',
+        ''
+      ]
+    ];
+
+    transcript.load(transcriptData);
+    const result = transcript.generateGlossText();
+
+    // Should generate output without errors
+    expect(result).toBeTruthy();
+    expect(result).toContain('K̲ʼay');
+    expect(result).toContain('yukwhl');
+  });
+});
