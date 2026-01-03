@@ -14,9 +14,11 @@ export class Orthography {
   }
 
   public load(data: any[]) {
-    const rows: GraphemeRow[] = data.map((row) => ({
-        grapheme: row[this.headers.indexOf(GraphemeColumns.grapheme)]
-      }));
+    const rows: GraphemeRow[] = data
+      .map((row) => ({
+        grapheme: row[this.headers.indexOf(GraphemeColumns.grapheme)].trim() // trim whitespace
+      }))
+      .filter((row) => row.grapheme !== ''); // filter out rows with only whitespace
     this.graphemes = rows;
     this.setProfile();
   }
@@ -27,11 +29,4 @@ export class Orthography {
         });
     this.profile = new Profile(graphemeList);
   }
-
-
-  // CRITICAL: Use npmBundle.Profile to ensure compatibility with npmBundle.Tokenizer
-  // In Google Apps Script, both Tokenizer and Profile must come from the same bundle
-  // Check if npmBundle.Profile exists (Apps Script) or fall back to imported Profile (tests)
-//   const ProfileClass = (typeof npmBundle !== 'undefined' && npmBundle.Profile) ? npmBundle.Profile : Profile;
-//   return new ProfileClass(graphemeList);
 }
