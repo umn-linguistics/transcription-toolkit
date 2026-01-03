@@ -278,16 +278,13 @@ export class Transcript {
   }
 
   private textLength(text: string): number {
-    const re = /(?<char>\P{Mark})(?<combiner>\p{Mark}+)/gu;
-    text = text.replace(re, `$1`);
+    // find each letter followed by one or more combining marks
+    const re = /(\p{Letter})(\p{Mark}+)/gu;
+    // replace with a blank space
+    text = text.replace(re, ' '); 
+    // find the length of the string without combining marks
     return Array.from(text).length;
   }
-
-  // unparseAsCsv(): string {
-  //   // Extract values from the transcript and include the headers
-  //   const csvData = [this.headers, ...this.rows];
-  //   return unparse(csvData);
-  // }
 
   private escapeCSV(value: any): string {
     const str = String(value ?? '');
