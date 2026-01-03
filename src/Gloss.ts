@@ -13,9 +13,15 @@ export class Gloss {
   }
 
   public load(data: any[]) {
-    const rows: MorphemeRow[] = data.map((row) => ({
-        morpheme_tag: row[this.headers.indexOf(MorphemeColumns.morpheme)]
+    // trim and remove duplicate tags
+    const tagSet: Set<string> = new Set(data.map(row => 
+        row[this.headers.indexOf(MorphemeColumns.morpheme)].trim())
+      .filter(tag => tag !== ''));
+    
+    const rows: MorphemeRow[] = Array.from(tagSet).map(tag => ({
+        morpheme_tag: tag
       }));
+
     this.rows = rows;
     this.validMorphemeLabels = this.rows.map(row => row.morpheme_tag)
   }
