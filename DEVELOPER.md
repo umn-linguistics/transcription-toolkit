@@ -11,7 +11,6 @@ This guide covers development workflows, testing, building, and deployment to Go
 - [Running Tests](#running-tests)
 - [Deploying to Google Apps Script](#deploying-to-google-apps-script)
 - [Development Workflow](#development-workflow)
-- [Troubleshooting](#troubleshooting)
 
 ## Prerequisites
 
