@@ -7,13 +7,19 @@ export interface IFile {
   getName(): string;
   getContent(): string;
   setContent(content: string): void;
+
+}
+
+export interface IFileIterator {
+  hasNext(): boolean;
+  next(): IFile;
 }
 
 export interface IFolder {
   getId(): string;
   getName(): string;
   getFiles(): IFile[];
-  getFilesByName(name: string): IFile[];
+  getFilesByName(name: string): IFileIterator;
   createFile(name: string, content: string, mimeType: string): IFile;
 }
 
