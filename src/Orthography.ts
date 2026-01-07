@@ -1,7 +1,7 @@
-import { ConcordanceRow, TranscriptColumns, TranscriptRow, GraphemeRow, Graphemes, Transcription, GraphemeColumns } from './types';
+import { GraphemeRow, GraphemeColumns } from './types';
 import { validHeaders } from './validators';
 import { Profile } from '@enfrank/segments-js';
-import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@enfrank/segments-js';
+import type { GraphemeSpec } from '@enfrank/segments-js';
 
 
 export class Orthography {
@@ -16,7 +16,7 @@ export class Orthography {
   public load(data: any[]) {
     const rows: GraphemeRow[] = data
       .map((row) => ({
-        grapheme: row[this.headers.indexOf(GraphemeColumns.grapheme)].trim() // trim whitespace
+        grapheme: String(row[this.headers.indexOf(GraphemeColumns.grapheme)]).trim() // trim whitespace
       }))
       .filter((row) => row.grapheme !== ''); // filter out rows with only whitespace
     this.graphemes = rows;
