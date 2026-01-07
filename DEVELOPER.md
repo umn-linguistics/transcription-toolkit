@@ -74,7 +74,6 @@ transcription-toolkit/
 │       └── *-template.html   # HTML templates for UI
 ├── dist/                     # Build output (generated)
 │   ├── index.js              # Bundled JavaScript
-│   ├── bundle.js             # Bundled dependencies
 │   └── appsscript.json       # Google Apps Script manifest
 ├── examples/                 # Example scripts and data
 ├── .clasp.json               # Clasp configuration
@@ -95,17 +94,12 @@ npm run build
 
 ### Build Process
 
-1. **Bundle dependencies** (`bundle` script)
-   - Uses esbuild to bundle external dependencies
-   - Creates `dist/bundle.js` in IIFE format
-   - Injects polyfills for Node.js modules
-
-2. **Compile TypeScript** (`rollup` script)
+1. **Compile TypeScript** (`rollup` script)
    - Transpiles TypeScript to JavaScript
    - Outputs to `dist/` directory
    - Uses Babel for compatibility
 
-3. **Copy manifest** (`manifest` script)
+2. **Copy manifest** (`manifest` script)
    - Copies `appsscript.json` to `dist/`
    - Copies HTML templates to `dist/`
 
@@ -113,7 +107,6 @@ npm run build
 
 After building, the `dist/` folder contains:
 - `index.js` - Main application code
-- `bundle.js` - Bundled dependencies
 - `appsscript.json` - Apps Script manifest
 - HTML templates for UI dialogs
 
