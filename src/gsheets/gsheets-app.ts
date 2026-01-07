@@ -237,7 +237,7 @@ export function exportText() {
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
   const storageAdapter = new GASStorageAdapter();
 
-  // Generate LaTex 
+  // Generate text 
   const transcript = transcriptSpreadsheet.getTranscriptData();
   const text = transcript.generateGlossText();
 
