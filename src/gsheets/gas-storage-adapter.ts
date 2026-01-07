@@ -2,7 +2,7 @@
  * Google Apps Script implementation of the storage adapter
  */
 
-import { IStorage, IFile, IFolder, IStorageSpreadsheet } from '../interfaces/storage';
+import { IStorage, IFile, IFolder, IStorageSpreadsheet, IFileIterator } from '../interfaces/storage';
 
 class GASFile implements IFile {
   constructor(private file: GoogleAppsScript.Drive.File) {}
@@ -21,6 +21,18 @@ class GASFile implements IFile {
 
   setContent(content: string): void {
     this.file.setContent(content);
+  }
+}
+
+class GASFileIterator implements IFileIterator {
+  constructor(private iterator: GoogleAppsScript.Drive.FileIterator) {}
+
+  hasNext(): boolean {
+    return this.iterator.hasNext();
+  }
+
+  next(): IFile {
+    return new GASFile(this.iterator.next());
   }
 }
 
@@ -46,15 +58,8 @@ class GASFolder implements IFolder {
     return files;
   }
 
-  getFilesByName(name: string): IFile[] {
-    const files: IFile[] = [];
-    const iterator = this.folder.getFilesByName(name);
-
-    while (iterator.hasNext()) {
-      files.push(new GASFile(iterator.next()));
-    }
-
-    return files;
+  getFilesByName(name: string): IFileIterator {
+    return new GASFileIterator(this.folder.getFilesByName(name));
   }
 
   createFile(name: string, content: string, mimeType: string): IFile {
@@ -108,8 +113,8 @@ export class GASStorageAdapter implements IStorage {
     const folder = this.getFolder(folderId);
     const existingFiles = folder.getFilesByName(fileName);
 
-    if (existingFiles.length > 0) {
-      return existingFiles[0];
+    if (existingFiles.hasNext()) {
+      return existingFiles.next();
     }
 
     return folder.createFile(fileName, '', mimeType);
@@ -154,13 +159,14 @@ export class GASStorageAdapter implements IStorage {
 
   getFileData(folderId: string, fileName: string, delimiter: string = '\t'): string[][] {
     const folder = new GASFolder(DriveApp.getFolderById(folderId));
-    const files = folder.getFilesByName(fileName);
+    const filesIterator = folder.getFilesByName(fileName);
 
-    if (files.length === 0) {
+    if (!filesIterator.hasNext()) {
       throw new Error(`File ${fileName} not found`);
     }
 
-    const fileString = files[0].getContent();
+    const file = filesIterator.next();
+    const fileString = file.getContent();
     return this.parseCsv(fileString, delimiter);
   }
 
