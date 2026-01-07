@@ -303,6 +303,8 @@ describe('Orthography', () => {
 
     test('handles duplicate graphemes', () => {
       const headers = ['character'];
+
+      const warningSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
       const orthography = new Orthography(headers);
 
       const data = [
@@ -313,6 +315,11 @@ describe('Orthography', () => {
       ];
 
       orthography.load(data);
+
+      // Should result in duplicate grapheme warning
+      expect(warningSpy).toHaveBeenCalledWith('line 4: duplicate grapheme in profile: a');
+      expect(warningSpy).toHaveBeenCalledTimes(1);
+      warningSpy.mockRestore()
 
       // All entries are loaded, including duplicates
       expect(orthography.graphemes).toHaveLength(4);
