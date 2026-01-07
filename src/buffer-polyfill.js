@@ -1,5 +1,7 @@
-// Minimal Buffer polyfill for Google Apps Script
-// Only implements the methods used by csv-stringify
+/**
+ * Minimal Buffer polyfill for Google Apps Script
+ * Only implements the methods actually used by bundled dependencies
+ */
 
 class BufferPolyfill {
   constructor(data) {
@@ -13,12 +15,17 @@ class BufferPolyfill {
     }
   }
 
-  static isBuffer(obj) {
-    return obj instanceof BufferPolyfill;
+  static from(data, encoding) {
+    if (Array.isArray(data)) {
+      return new BufferPolyfill(data);
+    } else if (typeof data === 'string') {
+      return new BufferPolyfill(data);
+    }
+    return new BufferPolyfill('');
   }
 
-  static from(data, encoding) {
-    return new BufferPolyfill(data);
+  static isBuffer(obj) {
+    return obj instanceof BufferPolyfill;
   }
 
   toString(encoding) {
@@ -26,4 +33,5 @@ class BufferPolyfill {
   }
 }
 
+// Export for rollup to inject
 export const Buffer = BufferPolyfill;
