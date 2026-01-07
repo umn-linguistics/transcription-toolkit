@@ -2,19 +2,14 @@ import { ConcordanceRow, TranscriptColumns, Transcription, TranscriptRow } from 
 import { Transcript } from './Transcript';
 import { ISpreadsheet } from './interfaces/spreadsheet';
 import { SHEET_NAMES } from './interfaces/constants';
-import { GraphemeColumns, Graphemes } from './types';
-import { validHeaders } from './validators';
 import { Orthography } from './Orthography';
 import { Gloss } from './Gloss';
-//import { Transcript, Graphemes, Transcription, Morphemes } from '../../types';
 
 export class TranscriptSpreadsheet {
-  //public transcript: Transcript;
   public spreadsheet: ISpreadsheet;
 
   constructor(spreadsheet: ISpreadsheet) {
     this.spreadsheet = spreadsheet;
-    //this.transcript = new Transcript(SUPPORTED_HEADERS);
   }
 
   public getTranscriptData(): Transcript {
@@ -60,7 +55,6 @@ export class TranscriptSpreadsheet {
 
     // Create the sheet with headers
     this.spreadsheet.createSheet(sheetName, columnHeaders);
-
     return sheetName;  
   }
 

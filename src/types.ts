@@ -17,8 +17,6 @@ export interface TranscriptRow {
 export interface Transcript {
   headers: string[],
   rows: any[] // we want to support the addition of ad hoc columns while performing checks and updates based on the column names in the TranscriptColumns enum
-  //headers: Map<string,number>,
-  //rows: TranscriptRow[]
 }
 
 export interface Transcription {
@@ -55,8 +53,6 @@ export enum GraphemeColumns {
 export interface Graphemes {
   headers: string[],
   rows: any[] // we want to support the addition of ad hoc columns while performing checks and updates based on the column names in the TranscriptColumns enum
-  //headers: Map<string,number>,
-  //rows: TranscriptRow[]
 }
 
 export interface GraphemeRow {
