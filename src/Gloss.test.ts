@@ -171,7 +171,6 @@ describe('Gloss', () => {
 
       gloss.load(data);
 
-      // Whitespace is preserved as loaded
       expect(gloss.rows[0].morpheme_tag).toBe('DET');
       expect(gloss.rows[2].morpheme_tag).toBe('V');
     });

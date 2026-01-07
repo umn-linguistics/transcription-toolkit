@@ -15,7 +15,7 @@ export class Gloss {
   public load(data: any[]) {
     // trim and remove duplicate tags
     const tagSet: Set<string> = new Set(data.map(row => 
-        row[this.headers.indexOf(MorphemeColumns.morpheme)].trim())
+        String(row[this.headers.indexOf(MorphemeColumns.morpheme)]).trim())
       .filter(tag => tag !== ''));
     
     const rows: MorphemeRow[] = Array.from(tagSet).map(tag => ({
