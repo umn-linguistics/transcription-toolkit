@@ -74,7 +74,7 @@ export function generateWordList() {
   transcriptStorage.createWordListSpreadsheet(concordanceData, folderId, fileName);
 
   SpreadsheetApp.getUi()
-    .alert('Done!');
+    .alert(`Done! Saved as ${fileName} in Google Drive.`);
 }
 
 export function validateGraphemes() {
