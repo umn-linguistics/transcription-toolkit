@@ -1,11 +1,5 @@
-import { ConcordanceRow, TranscriptColumns, Transcription, TranscriptRow } from './types';
-import { Transcript } from './Transcript';
+import { ConcordanceRow } from './types';
 import { IStorage } from './interfaces/storage';
-import { SHEET_NAMES } from './interfaces/constants';
-import { GraphemeColumns, Graphemes } from './types';
-import { validHeaders } from './validators';
-import { Orthography } from './Orthography';
-import { Gloss } from './Gloss';
 
 export class TranscriptStorage {
   public storage: IStorage;

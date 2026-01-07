@@ -18,8 +18,13 @@ import {
     createCharactersSheet
  } from "./gsheets-app";
 
+// @ts-ignore - Called by Google Apps Script on add-on installation
+function onInstall(e: any) {
+  onOpen(e);
+}
+
 // @ts-ignore - Called by Google Apps Script
-function onOpen() {
+function onOpen(e?: any) {
   var ui = SpreadsheetApp.getUi();
   ui.createMenu('🧰 Transcript Tools')
       .addItem('Show glosses for selected rows', 'showSelectedGlossesMenuItem')
@@ -31,7 +36,7 @@ function onOpen() {
       .addSubMenu(ui.createMenu('Validate')
         .addItem('Validate Characters', 'validateGraphemesMenuItem')
         .addItem('Validate IDs', 'validateIDsMenuItem')
-        .addItem('Validate Gloss Labels', 'validateMorphemeLabelsMenuItem')
+        .addItem('Validate Gloss Abbreviations', 'validateMorphemeLabelsMenuItem')
         .addItem('Validate Gloss Alignment', 'validateGlossAlignmentMenuItem')
         .addItem('Clear Validation Results', 'clearValidationResultsMenuItem'))
       .addSubMenu(ui.createMenu('Import')

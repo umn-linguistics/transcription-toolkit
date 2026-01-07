@@ -1,7 +1,4 @@
-import { ConcordanceRow, TranscriptColumns, TranscriptRow, MorphemeRow, Graphemes, Transcription, GraphemeColumns, MorphemeColumns, ElanRow, ElanColumns } from './types';
-import { validHeaders } from './validators';
-import { Profile } from '@enfrank/segments-js';
-import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@enfrank/segments-js';
+import { ElanRow, ElanColumns } from './types';
 
 
 export class Elan {
@@ -26,8 +23,8 @@ export class Elan {
         // Once all column headers are identified, start extracting data
         if (this.columnRowFound(columnMap)) {
             const beginTimeIdx = columnMap.get(ElanColumns['begin_time'])!;
-            const endTimeIdx = columnMap.get(ElanColumns['end_time'],)!;
-            const durationIdx = columnMap.get( ElanColumns['duration'])!;
+            const endTimeIdx = columnMap.get(ElanColumns['end_time'])!;
+            const durationIdx = columnMap.get(ElanColumns['duration'])!;
             const idIdx = columnMap.get(this.idTier)!;
 
             const elanRow: ElanRow = {

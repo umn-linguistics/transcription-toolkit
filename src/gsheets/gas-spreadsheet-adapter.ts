@@ -103,6 +103,7 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
         protection.removeEditors(editors);
       }
       protection.setDescription(`Protected range: ${headerRange}`);
+      newSheet.setFrozenRows(1);
     }
   }
 
@@ -117,9 +118,9 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
     const idMap = new Map<string, number>();
     const idColumnIndex = headers.indexOf('id') + 1; // 1-indexed
 
-    for (let rownum = 1; rownum <= transcriptRowCount; rownum++) {
-      const transcriptEntryId = sheet.getRange(rownum, idColumnIndex).getValue();
-      idMap.set(transcriptEntryId.toString(), rownum);
+    for (let rowNum = 1; rowNum <= transcriptRowCount; rowNum++) {
+      const transcriptEntryId = sheet.getRange(rowNum, idColumnIndex).getValue();
+      idMap.set(transcriptEntryId.toString(), rowNum);
     }
 
     return idMap;
