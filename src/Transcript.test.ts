@@ -304,9 +304,9 @@ describe('generateGlossText', () => {
     const transcriptData = [
       [
         '1',
-        'the cat',
-        'DET N',
-        'the cat',
+        'wãʒí-da bduhá hé',
+        'one-only have.1SG.A Q',
+        'I just have one...',
         '',
         '',
         '',
@@ -318,11 +318,13 @@ describe('generateGlossText', () => {
     transcript.load(transcriptData);
     const result = transcript.generateGlossText();
 
-    // Both words should be present
-    expect(result).toContain('the');
-    expect(result).toContain('cat');
-    expect(result).toContain('DET');
-    expect(result).toContain('N');
+    const lines = result.split('\n');
+    expect(lines[0]).toBe('(1)');
+    expect(lines[1]).toBe('        wãʒí-da 	bduhá     	hé');
+    expect(lines[2]).toBe('        one-only	have.1SG.A	Q');
+    expect(lines[3]).toBe('        I just have one...');
+    expect(lines[4]).toBe('');
+    expect(lines[5]).toBe('');
   });
 
   test('handles multiple utterances', () => {

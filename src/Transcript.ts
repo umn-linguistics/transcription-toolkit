@@ -1,10 +1,9 @@
-import { ConcordanceRow, TranscriptColumns, TranscriptRow, Graphemes, MorphemeColumns, Transcription, ElanColumns } from './types';
+import { ConcordanceRow, TranscriptColumns, TranscriptRow, Transcription, ElanColumns } from './types';
 import { validateGloss, validateGlossAlignment, validHeaders } from './validators';
 import { Profile, TokenizeOptions, Tokenizer } from '@enfrank/segments-js';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
 import { Elan } from './Elan';
-//import { unparse } from 'papaparse';
 
 export class Transcript {
   public headers: string[];
@@ -127,12 +126,6 @@ export class Transcript {
 
   validateMorphemeLabels(morphemeData: Gloss): Transcription[] {
     const invalidGloss: Transcription[] = [];
-
-    const headerIndex = (header: TranscriptColumns) =>
-      this.headers.indexOf(header);
-
-    const morphemeHeaderIndex = (header: MorphemeColumns) =>
-      morphemeData.headers.indexOf(header);
 
     for (const row of this.rows) {
       const validated = validateGloss(row.utteranceGloss, morphemeData.validMorphemeLabels);
@@ -263,21 +256,25 @@ export class Transcript {
       let alignedGloss = '';
 
       for (const wordRow of concordance){
-
-        const maxWordLength = Math.max(this.textLength(wordRow.word), this.textLength(wordRow.wordGloss));
-          alignedTranscription += `${wordRow.word.padEnd(maxWordLength)}\t`;
-          alignedGloss += `${wordRow.wordGloss.padEnd(maxWordLength)}\t`;
+        const maxLetterLength = Math.max(this.letterLength(wordRow.word), this.letterLength(wordRow.wordGloss));
+          alignedTranscription += `${this.padByLetterLength(wordRow.word, maxLetterLength)}\t`;
+          alignedGloss += `${this.padByLetterLength(wordRow.wordGloss, maxLetterLength)}\t`;
       }
 
       text += `(${row.id})
-        ${alignedTranscription}
-        ${alignedGloss}
+        ${alignedTranscription.trimEnd()}
+        ${alignedGloss.trimEnd()}
         ${row.freeTranslation}\n\n`
       }
       return text;
   }
 
-  private textLength(text: string): number {
+  private padByLetterLength(text: string, maxLetterLength: number){
+    const letterLength = this.letterLength(text);
+    return (maxLetterLength > letterLength) ? `${text}${' '.repeat(maxLetterLength - letterLength)}` : text;
+  }
+
+  private letterLength(text: string): number {
     // find each letter followed by one or more combining marks
     const re = /(\p{Letter})(\p{Mark}+)/gu;
     // replace with a blank space
@@ -313,12 +310,10 @@ export class Transcript {
           transcriptRow.duration = elanRow.duration;
           // To support the addition of unmanaged columns, update the original raw
           // to handle csv export.
-          if (transcriptRow.raw){
-            if (transcriptRow.raw) {
-              transcriptRow.raw[this.getColumnIndex(ElanColumns.begin_time)] = elanRow.beginTime;
-              transcriptRow.raw[this.getColumnIndex(ElanColumns.end_time)] = elanRow.endTime;
-              transcriptRow.raw[this.getColumnIndex(ElanColumns.duration)] = elanRow.duration;
-            }
+          if (transcriptRow.raw) {
+            transcriptRow.raw[this.getColumnIndex(ElanColumns.begin_time)] = elanRow.beginTime;
+            transcriptRow.raw[this.getColumnIndex(ElanColumns.end_time)] = elanRow.endTime;
+            transcriptRow.raw[this.getColumnIndex(ElanColumns.duration)] = elanRow.duration;
           }
           updatedTranscriptRows.push(transcriptRow);
         }
