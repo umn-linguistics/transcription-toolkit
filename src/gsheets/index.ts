@@ -13,7 +13,8 @@ import {
     showElanFilePicker,
     processElanFiles,
     getDriveFiles,
-    exportCsvBySpeaker,
+    exportTab,
+    exportTabBySpeaker,
     createGlossAbbrevationsSheet,
     createCharactersSheet
  } from "./gsheets-app";
@@ -45,7 +46,8 @@ function onOpen(e?: any) {
         .addItem('Export as LaTeX', 'exportLatexMenuItem')
         .addItem('Export as TXT', 'exportTextMenuItem')
         .addItem('Export as CSV', 'exportCsvMenuItem')
-        .addItem('Export as CSV by speaker', 'exportElanCsvBySpeakerMenuItem'))
+        .addItem('Export as TAB for ELAN', 'exportTabMenuItem')
+        .addItem('Export as TAB for ELAN by speaker', 'exportElanTabBySpeakerMenuItem'))
       .addToUi();
 }
 
@@ -102,10 +104,6 @@ function exportTextMenuItem() {
     exportText();
 }
 
-function exportCsvMenuItem() {
-    exportCsv();
-}
-
 function showElanFilePickerMenuItem() {
   showElanFilePicker();
 }
@@ -118,8 +116,16 @@ function getDriveFilesTemplateCall() {
   return getDriveFiles();
 }
 
+function exportCsvMenuItem() {
+    exportCsv();
+}
+
+function exportTabMenuItem() {
+    exportTab();
+}
+
 function exportElanCsvBySpeakerMenuItem() {
-  exportCsvBySpeaker();
+  exportTabBySpeaker();
 }
 
 // Make this file a module for TypeScript while keeping functions global for Apps Script

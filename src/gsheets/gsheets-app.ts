@@ -275,6 +275,28 @@ export function exportCsv() {
     .alert(`Done! Saved as ${fileName} in Google Drive.`);
 }
 
+export function exportTab() {
+  // Fetch data
+  const spreadsheetAdapter = new GASSpreadsheetAdapter();
+  const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+  const storageAdapter = new GASStorageAdapter();
+
+  // Generate csv 
+  const transcript = transcriptSpreadsheet.getTranscriptData();
+  const csvContent = transcript.unparseAsElanTab();
+
+  // Save file
+  const sheetName = spreadsheetAdapter.getActiveSheetName();
+  const fileName = `transcript-${sheetName}.tab`;
+  const folderId = storageAdapter.getCurrentFolderId();
+
+  const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
+  file.setContent(csvContent);
+
+  SpreadsheetApp.getUi()
+    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+}
+
 export function showElanFilePicker() {
   // Create UI adapter
   const uiAdapter = new GASUIAdapter();
@@ -339,7 +361,7 @@ export function getDriveFiles() {
   return storageAdapter.listFiles(folderId);
 }
 
-export function exportCsvBySpeaker() {
+export function exportTabBySpeaker() {
   // Fetch data
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
@@ -351,10 +373,10 @@ export function exportCsvBySpeaker() {
   const sheetName = spreadsheetAdapter.getActiveSheetName();
   let fileCount = 0;
 
-  // Save each transcript as a csv file
+  // Save each transcript as a tab file
   for (let speakerTranscript of speakerTranscripts) {
-    const csvContent = speakerTranscript.unparseAsCsv();
-    const fileName = `transcript-${sheetName}-speaker-${speakerTranscript.speaker}.csv`;
+    const csvContent = speakerTranscript.unparseAsElanTab();
+    const fileName = `transcript-${sheetName}-speaker-${speakerTranscript.speaker}.tab`;
     const folderId = storageAdapter.getCurrentFolderId();
     const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
     file.setContent(csvContent);
