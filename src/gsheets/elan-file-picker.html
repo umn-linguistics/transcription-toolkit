@@ -3,45 +3,211 @@
 <head>
   <base target="_top">
   <style>
-    body { font-family: 'Arial', sans-serif; margin: 10px; }
-    .file-list { margin-top: 15px; }
-    .file-item { margin-bottom: 5px; }
-    .tier-input { margin-top: 15px; }
-    input { margin-top: 10px; padding: 8px 15px; }
-    button { margin-top: 10px; padding: 8px 15px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .header {
+      color: #202124;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .description {
+      color: #5f6368;
+      margin-bottom: 20px;
+      font-size: 13px;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section-label {
+      color: #202124;
+      font-weight: 500;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+    .file-list {
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #f8f9fa;
+    }
+    .file-item {
+      padding: 6px 0;
+      border-bottom: 1px solid #e8eaed;
+    }
+    .file-item:last-child {
+      border-bottom: none;
+    }
+    .file-item label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: #202124;
+    }
+    .file-item label:hover {
+      background-color: #e8f0fe;
+      margin: 0 -8px;
+      padding: 6px 8px;
+      border-radius: 3px;
+    }
+    .file-item input[type="checkbox"] {
+      margin-right: 10px;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+    .tier-input {
+      margin-bottom: 20px;
+    }
+    .tier-input input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #dadce0;
+      border-radius: 4px;
+      font-size: 14px;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
+    .tier-input input:focus {
+      outline: none;
+      border-color: #4285f4;
+      box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+    }
+    .button-container {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn {
+      padding: 10px 24px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .btn-primary {
+      background-color: #4285f4;
+      color: white;
+    }
+    .btn-primary:hover {
+      background-color: #3367d6;
+    }
+    .btn-primary:disabled {
+      background-color: #dadce0;
+      color: #80868b;
+      cursor: not-allowed;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #80868b;
+      font-style: italic;
+    }
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #5f6368;
+    }
   </style>
 </head>
 <body>
-  <p>Select one or more ELAN data export files. These should be tab-delimited and contain a field named 'default' that contains id values corresponding to the spreadsheet 'id' column.</p>
-  <div class="file-list" id="fileListContainer"></div>
-  <div class="tier-input"></div>
-    <p>Enter the name of the tier in ELAN that stores the IDs for each annotation:</p>
-    <input type="text" id="elanIdTierName" placeholder="default">
-    <button onclick="processSelectedFiles()">Process Selected</button>
+  <div class="header">Import ELAN Files</div>
+  <div class="description">
+    Select one or more ELAN data export files. These should be tab-delimited and contain
+    a field that stores ID values corresponding to the spreadsheet 'id' column.
+  </div>
+
+  <div class="section">
+    <div class="section-label">Available ELAN Files</div>
+    <div class="file-list" id="fileListContainer">
+      <div class="loading">Loading files...</div>
+    </div>
+  </div>
+
+  <div class="section tier-input">
+    <div class="section-label">ELAN Tier Name</div>
+    <input type="text" id="elanIdTierName" placeholder="Enter tier name (e.g., 'default')" value="default">
+  </div>
+
+  <div class="button-container">
+    <button class="btn btn-primary" id="processButton" onclick="processSelectedFiles()" disabled>
+      Process Selected Files
+    </button>
   </div>
   <script>
     function populateFileList(files) {
       const container = document.getElementById('fileListContainer');
+
+      if (files.length === 0) {
+        container.innerHTML = '<div class="empty-state">No ELAN files found in the current folder.</div>';
+        return;
+      }
+
       container.innerHTML = '';
       files.forEach(file => {
         const div = document.createElement('div');
         div.className = 'file-item';
         div.innerHTML = `<label>
-                           <input type="checkbox" name="selectedFiles" value="${file.id}">
+                           <input type="checkbox" name="selectedFiles" value="${file.id}" onchange="updateProcessButton()">
                            ${file.name}
                          </label>`;
         container.appendChild(div);
       });
+
+      updateProcessButton();
+    }
+
+    function updateProcessButton() {
+      const checkboxes = document.querySelectorAll('input[name="selectedFiles"]:checked');
+      const processButton = document.getElementById('processButton');
+      processButton.disabled = checkboxes.length === 0;
+
+      if (checkboxes.length > 0) {
+        processButton.textContent = `Process ${checkboxes.length} File${checkboxes.length > 1 ? 's' : ''}`;
+      } else {
+        processButton.textContent = 'Process Selected Files';
+      }
     }
 
     function processSelectedFiles() {
       const checkboxes = document.querySelectorAll('input[name="selectedFiles"]:checked');
-      const elanIdTierName = document.getElementById('elanIdTierName').value;
+      const elanIdTierName = document.getElementById('elanIdTierName').value.trim();
+
+      if (checkboxes.length === 0) {
+        alert('Please select at least one file.');
+        return;
+      }
+
+      if (!elanIdTierName) {
+        alert('Please enter the ELAN tier name.');
+        return;
+      }
+
       const selectedFileIds = Array.from(checkboxes).map(cb => cb.value);
+      const processButton = document.getElementById('processButton');
+
+      // Disable button and show processing state
+      processButton.disabled = true;
+      processButton.textContent = 'Processing...';
+
       google.script.run
         .withSuccessHandler(function(result) {
           alert(result);
           google.script.host.close();
+        })
+        .withFailureHandler(function(error) {
+          alert('Error: ' + error.message);
+          processButton.disabled = false;
+          updateProcessButton();
         })
         .processElanFilesTemplateCall(selectedFileIds, elanIdTierName);
     }
