@@ -2,7 +2,6 @@ import { Transcript } from './Transcript';
 import { Elan } from './Elan';
 import { TranscriptColumns, ElanColumns } from './types';
 import { Profile } from '@umn-linguistics/segments-js';
-//const Transcript = require('./Transcript');
 
 test('load transcript', () => {
   const baseColumns = Object.values(TranscriptColumns);
