@@ -131,26 +131,8 @@ The example also demonstrates using:
 - `Gloss` - Define valid morpheme gloss abbreviations
 - `Elan` - Load timing data from ELAN exports
 
-## Troubleshooting
-
-### TypeScript errors
-
-If you encounter TypeScript errors, make sure you're running from the `examples/` directory and that `node_modules` is installed in the parent directory.
-
-### Module not found
-
-Ensure you've installed dependencies:
-```bash
-cd ..
-npm install
-```
-
-### Permission errors
-
-If you get permission errors writing files, ensure the `examples/` directory is writable.
 
 ## Additional Resources
 
 - [Leipzig Glossing Rules](https://www.eva.mpg.de/lingua/pdf/Glossing-Rules.pdf)
 - [ELAN Annotation Software](https://archive.mpi.nl/tla/elan)
-- [Orthography Profiles Specification](http://clld.org/downloads.html)

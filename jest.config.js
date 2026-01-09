@@ -1,6 +1,6 @@
 module.exports = {
   testEnvironment: 'node',
-  transformIgnorePatterns: ['node_modules/(?!(word-aligner|@enfrank/segments-js)/)'],
+  transformIgnorePatterns: ['node_modules/(?!(word-aligner|@umn-linguistics/segments-js)/)'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   transform: {
     '^.+\\.(ts|tsx|js|jsx)$': 'babel-jest'
