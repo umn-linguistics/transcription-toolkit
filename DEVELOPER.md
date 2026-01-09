@@ -1,6 +1,6 @@
 # Developer Guide
 
-This guide covers development workflows, testing, building, and deployment to Google Apps Script.
+This guide covers development workflows, testing, building, and deployment of `transcription tools` to Google Apps Script.
 
 ## Table of Contents
 
@@ -17,8 +17,8 @@ This guide covers development workflows, testing, building, and deployment to Go
 ### Required
 
 - **Node.js** (v12 or higher)
-- **npm** (comes with Node.js)
-- **Google Account** (for Google Apps Script deployment)
+- **npm**
+- **Google Account**
 
 ### Install Global Tools
 
@@ -34,7 +34,7 @@ npm install -g typescript
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/umn-linguistics/transcription-toolkit
    cd transcription-toolkit
    ```
 
@@ -54,33 +54,6 @@ npm install -g typescript
    npm test
    npm run build
    ```
-
-## Project Structure
-
-```
-transcription-toolkit/
-├── src/                      # TypeScript source files
-│   ├── Transcript.ts         # Core transcript class
-│   ├── Orthography.ts        # Grapheme validation
-│   ├── Gloss.ts              # Morpheme gloss validation
-│   ├── Elan.ts               # ELAN timing data integration
-│   ├── TranscriptStorage.ts  # Storage abstraction
-│   ├── TranscriptSpreadsheet.ts  # Spreadsheet abstraction
-│   ├── types.ts              # TypeScript type definitions
-│   ├── validators.ts         # Validation functions
-│   ├── interfaces/           # Interface definitions
-│   └── gsheets/              # Google Apps Script specific code
-│       ├── gsheets-app.ts    # Main entry point for Google Sheets
-│       └── *-template.html   # HTML templates for UI
-├── dist/                     # Build output (generated)
-│   ├── index.js              # Bundled JavaScript
-│   └── appsscript.json       # Google Apps Script manifest
-├── examples/                 # Example scripts and data
-├── .clasp.json               # Clasp configuration
-├── appsscript.json           # Apps Script manifest (source)
-├── rollup.config.js          # Build configuration
-└── package.json              # Project dependencies
-```
 
 ## Building the Project
 
@@ -254,7 +227,7 @@ The `appsscript.json` file configures your Apps Script project:
 
 ```json
 {
-  "timeZone": "America/New_York",
+  "timeZone": "America/Chicago",
   "dependencies": {},
   "exceptionLogging": "STACKDRIVER",
   "runtimeVersion": "V8"
