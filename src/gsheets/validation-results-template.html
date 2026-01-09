@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      margin: 0;
+    }
+    .success {
+      color: #0f9d58;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .warning {
+      color: #f4b400;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .summary {
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    .id-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #f9f9f9;
+    }
+    .id-item {
+      display: inline-block;
+      background-color: #eb9999;
+      color: #000;
+      padding: 4px 8px;
+      margin: 3px;
+      border-radius: 3px;
+      font-size: 13px;
+      font-family: monospace;
+    }
+    .close-btn {
+      margin-top: 15px;
+      padding: 8px 16px;
+      background-color: #4285f4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .close-btn:hover {
+      background-color: #3367d6;
+    }
+  </style>
+</head>
+<body>
+  <? if (count === 0) { ?>
+    <div class="success">✓ Validation Complete</div>
+    <div class="summary">No <?= validationType ?> issues found!</div>
+  <? } else { ?>
+    <div class="warning">⚠ Validation Complete</div>
+    <div class="summary">
+      Found <strong><?= count ?></strong> row(s) with <?= validationType ?> issues.
+      The cells with issues have been highlighted in red.
+    </div>
+    <div class="id-list">
+      <? for (var i = 0; i < ids.length; i++) { ?>
+        <span class="id-item"><?= ids[i] ?></span>
+      <? } ?>
+    </div>
+  <? } ?>
+  <button class="close-btn" onclick="google.script.host.close()">Close</button>
+</body>
+</html>
