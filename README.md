@@ -10,10 +10,7 @@ Tools for teaching linguistic transcription and growing small documentation proj
 `Transcript Starter Kit` has two main components:
 1. A standalone set of [TypeScript classes](./src/). See [example README](./examples/README.md) for usage.
 2. A [Google Apps Script integration](./src/gsheets/) to provide this functionality in a Google Sheets Add-On.
-<!-- ![Custom Apps Script Menu](./examples/images/gsheets-menu.png | width=100) -->
-<div style="margin-left: 100px;">
-    <img src="./examples/images/gsheets-menu.png" width="200" alt="Custom Apps Script Menu">
-</div>
+&nbsp;&nbsp;<img src="./examples/images/gsheets-menu.png" width="200" alt="Custom Apps Script Menu">
 
 ## Getting Started
 ### Google Workspace Marketplace Add-Ons
