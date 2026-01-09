@@ -30,6 +30,9 @@ export class Transcript {
         date: row[this.headers.indexOf('date')],
         group: row[this.headers.indexOf('group')],
         speaker: row[this.headers.indexOf('speaker')],
+        beginTime: row[this.headers.indexOf('begin_time')],
+        endTime: row[this.headers.indexOf('end_time')],
+        duration: row[this.headers.indexOf('duration')],
         raw: row
       }));
     this.rows = rows;
@@ -297,6 +300,23 @@ export class Transcript {
     const rows = [this.headers, ...this.rows.map(row => row.raw as any[])];
     return rows.map(row => 
       row.map(this.escapeCSV).join(',')
+    ).join('\n');
+  }
+
+  unparseAsElanTab(): string {
+    // To support the addition of unmanaged columns, return the original raw
+    // data aligned to the original headers. 
+    let timeDateRows: TranscriptRow[] = [];
+    for (let row of this.rows){
+      if (row.beginTime){
+        timeDateRows.push(row);
+      }
+    }
+
+    //const timeDateRows = this.rows.filter(row => row.beginTime && row.endTime && row.duration);
+    const rows = [this.headers, ...timeDateRows.map(row => row.raw as any[])];
+    return rows.map(row => 
+      row.map(this.escapeCSV).join('\t')
     ).join('\n');
   }
 
