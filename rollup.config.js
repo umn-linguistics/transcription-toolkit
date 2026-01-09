@@ -9,6 +9,8 @@ import { readFileSync } from 'fs';
 
 const extensions = [".ts", ".js", ".html"];
 
+// Builds off of Google's starter kit at https://github.com/sqrrrl/apps-script-typescript-rollup-starter/blob/main/rollup.config.js
+
 // Plugin to inject Buffer polyfill for Google Apps Script
 const injectBufferPolyfill = () => {
   const polyfillCode = readFileSync('./src/buffer-polyfill.js', 'utf-8')
@@ -68,7 +70,6 @@ function createHtmlBundleConfig(files) {
             },
             plugins: [
                 nodeResolve(),
-                //commonjs(),
                 typescript(),
                 html({transformHtml: inlineBundles}),
             ],
