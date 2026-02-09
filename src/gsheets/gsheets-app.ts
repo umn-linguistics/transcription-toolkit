@@ -164,13 +164,18 @@ export function validateGlossAlignment() {
   // Fetch data
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+
+  Logger.log(`Get transcript data.`)
   const transcript = transcriptSpreadsheet.getTranscriptData();
 
+  Logger.log(`Validate gloss alignment for ${transcript.rows.length} rows.`)
   const misalignedRows = transcript.validateGlosses();
+  Logger.log(`Found ${misalignedRows.length} misaligned rows.`);
 
   // Update spreadsheet with validation results
   transcriptSpreadsheet.updateTranscriptWithGlossAlignmentValidations(misalignedRows, transcript.headers);
 
+  Logger.log(`Display results in html.`)
   // Use custom HTML dialog for better display of multiple IDs
   const template = HtmlService.createTemplateFromFile('validation-results-template');
   template.count = misalignedRows.length;

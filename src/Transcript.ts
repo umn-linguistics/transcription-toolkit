@@ -58,8 +58,8 @@ export class Transcript {
     const transcription = row.utterance;
 
     if (transcription) {
-      const words = transcription.split(' ');
-      const wordGlosses = row.utteranceGloss.split(' ');
+      const words = String(transcription).split(' ');
+      const wordGlosses = String(row.utteranceGloss).split(' ');
 
       words.forEach((word: string, idx: number) => {
         if (word) {
@@ -68,8 +68,8 @@ export class Transcript {
             word,
             wordGloss: wordGlosses[idx] ?? '',
             wordIndex: idx,
-            utterance: transcription,
-            utteranceGloss: row.utteranceGloss
+            utterance: String(transcription),
+            utteranceGloss: String(row.utteranceGloss)
           };
 
           concordanceData.push(concordanceRow);

@@ -118,20 +118,23 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
     const idMap = new Map<string, number>();
     const idColumnIndex = headers.indexOf('id') + 1; // 1-indexed
 
-    for (let rowNum = 1; rowNum <= transcriptRowCount; rowNum++) {
-      const transcriptEntryId = sheet.getRange(rowNum, idColumnIndex).getValue();
-      idMap.set(transcriptEntryId.toString(), rowNum);
+    Logger.log(`Build id to row map.`)
+    const values = sheet.getRange(1, idColumnIndex, transcriptRowCount, 1).getValues();
+    for (let rowNum = 0; rowNum < values.length; rowNum++) {
+      idMap.set(values[rowNum][0].toString(), rowNum + 1);
     }
-
+    Logger.log(`Done building id to row map.`)
     return idMap;
   }
 
   updateCellBackgrounds(updates: Array<{row: number, col: number, color: string}>): void {
+    Logger.log(`Get spreadsheet for cell color background update.`)
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
     // Group updates by color to minimize API calls
     const byColor = new Map<string, Array<{row: number, col: number}>>();
 
+    Logger.log(`Set colors for update.`)
     for (const update of updates) {
       if (!byColor.has(update.color)) {
         byColor.set(update.color, []);
@@ -139,15 +142,20 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
       byColor.get(update.color)!.push({row: update.row, col: update.col});
     }
 
+    const colorKeys = Array.from(byColor.keys());
+    Logger.log(`Colors to update: ${colorKeys}`)
+
     // Apply each color in batch
     for (const [color, cells] of byColor) {
+      Logger.log(`Count of cells to update: ${cells.length}`);
       for (const cell of cells) {
         sheet.getRange(cell.row, cell.col).setBackground(color);
       }
     }
-
+    Logger.log(`Flush spreadsheet to write updates.`);
     // Force changes to be written
     SpreadsheetApp.flush();
+    Logger.log(`Background update complete.`);
   }
 }
 

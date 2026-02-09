@@ -124,7 +124,7 @@ function exportTabMenuItem() {
     exportTab();
 }
 
-function exportElanCsvBySpeakerMenuItem() {
+function exportElanTabBySpeakerMenuItem() {
   exportTabBySpeaker();
 }
 

@@ -20,39 +20,19 @@ This guide covers development workflows, testing, building, and deployment of `t
 - **npm**
 - **Google Account**
 
-### Install Global Tools
-
-```bash
-# Install clasp (Command Line Apps Script Projects)
-npm install -g @google/clasp
-
-# Install TypeScript compiler (optional, project has local version)
-npm install -g typescript
-```
-
-## Development Setup
-
-1. **Clone the repository**
+### Install
+1. Install Google clasp (see [Google docs](https://github.com/google/clasp?tab=readme-ov-file#install) for additional details).
    ```bash
-   git clone https://github.com/umn-linguistics/transcription-toolkit
-   cd transcription-toolkit
+   npm install -g @google/clasp
    ```
-
-2. **Install dependencies**
+2. Enable the Google Apps script API at https://script.google.com/home/usersettings
+3. Install dependencies
    ```bash
    npm install
    ```
-
-3. **Login to clasp** (first time only)
+4. Login to clasp 
    ```bash
    clasp login
-   ```
-   This opens a browser window for Google authentication and stores credentials locally.
-
-4. **Verify setup**
-   ```bash
-   npm test
-   npm run build
    ```
 
 ## Building the Project

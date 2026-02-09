@@ -74,8 +74,8 @@ export const validateGloss = (str: string, validMorphemeTags: string[]): string 
 }
 
 export const validateGlossAlignment = (transcription: string, gloss: string): boolean => {
-  const utteranceList = normalizeWhitespace(transcription).split(' ');
-  const utteranceGlossList = normalizeWhitespace(gloss).split(' ');
+  const utteranceList = normalizeWhitespace(String(transcription)).split(' ').filter(Boolean);
+  const utteranceGlossList = normalizeWhitespace(String(gloss)).split(' ').filter(Boolean);
 
   return utteranceList.length === utteranceGlossList.length;
 };
