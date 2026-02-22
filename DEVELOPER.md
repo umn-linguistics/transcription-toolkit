@@ -109,6 +109,35 @@ Enable it by visiting https://script.google.com/home/usersettings.
 
    Replace `YOUR_SCRIPT_ID_HERE` with your actual Script ID.
 
+### Deploy to an Existing Project
+
+1. **Get IDs for Google Apps Script project**
+
+   Open the Google Sheet that is your deployment target
+   - From the URL of the sheet, locate and copy the ID. This will be the string of characters preceded by `https://docs.google.com/spreadsheets/d/` and followed by `/edit?`. For example, `xxxxx` from the following URL:
+      - https://docs.google.com/spreadsheets/d/xxxxx/edit?gid=123#gid=456
+   - This string of characters is `YOUR_SPREADSHEET_ID`.
+
+   From the same Google Sheet, navigate to `Extensions` → `Apps Script`.
+   - Select `⚙ Project Settings`, locate the `Script ID`, and copy the value. This is `YOUR_SCRIPT_ID`.
+
+2. **Ensure Apps Script is Enabled in Google Console**
+
+   Enable it by visiting https://script.google.com/home/usersettings.
+
+3. **Update `.clasp.json`**
+
+   Update `.clasp.json` in the project root with the values identified above:
+   ```json
+   {
+     "scriptId": "YOUR_SCRIPT_ID",
+     "rootDir": "./dist",
+     "parentId": "YOUR_SPREADSHEET_ID"
+   }
+   ```
+
+   Replace `YOUR_SCRIPT_ID_HERE` with your actual Script ID.
+
 ### Deployment Workflow
 
 #### 1. Build the Project
