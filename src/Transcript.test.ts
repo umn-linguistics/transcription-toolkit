@@ -390,4 +390,19 @@ describe('generateGlossText', () => {
     expect(result).toContain('K̲ʼay');
     expect(result).toContain('yukwhl');
   });
+
+  test('returns metadata', () => {
+    const headers = Object.values(TranscriptColumns);
+    const transcript = new Transcript(headers);
+
+    const testTitle = "test-sheet";
+    const testFileName = "test-file_name";
+    const result = transcript.metadata(testTitle, testFileName);
+
+    const metadataObj = JSON.parse(result);
+
+    expect(typeof(result)).toBe("string");
+    expect(metadataObj['dc:title']).toBe(testTitle);
+    expect(metadataObj.tables[0]['url']).toBe(testFileName);
+  });
 });

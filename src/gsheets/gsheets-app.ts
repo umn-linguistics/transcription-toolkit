@@ -276,8 +276,13 @@ export function exportCsv() {
   const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
   file.setContent(csvContent);
 
+  const metadataContent = transcript.metadata(sheetName, fileName);
+  const metadataFileName = `${fileName.replace('.csv', '')}-metadata.json`;
+  const metadataFile = storageAdapter.getOrCreateFile(folderId, metadataFileName, 'application/json');
+  metadataFile.setContent(metadataContent);
+
   SpreadsheetApp.getUi()
-    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+    .alert(`Done! Saved ${fileName} and ${metadataFileName} to Google Drive.`);
 }
 
 export function exportTab() {
