@@ -118,36 +118,49 @@ export class GASSpreadsheetAdapter implements ISpreadsheet {
     const idMap = new Map<string, number>();
     const idColumnIndex = headers.indexOf('id') + 1; // 1-indexed
 
-    for (let rowNum = 1; rowNum <= transcriptRowCount; rowNum++) {
-      const transcriptEntryId = sheet.getRange(rowNum, idColumnIndex).getValue();
-      idMap.set(transcriptEntryId.toString(), rowNum);
+    Logger.log(`Build id to row map.`)
+    const values = sheet.getRange(1, idColumnIndex, transcriptRowCount, 1).getValues();
+    for (let rowNum = 0; rowNum < values.length; rowNum++) {
+      idMap.set(values[rowNum][0].toString(), rowNum + 1);
     }
-
+    Logger.log(`Done building id to row map.`)
     return idMap;
   }
 
   updateCellBackgrounds(updates: Array<{row: number, col: number, color: string}>): void {
+    if (updates.length === 0) return;
+
+    Logger.log(`Get spreadsheet for cell color background update.`)
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
 
-    // Group updates by color to minimize API calls
-    const byColor = new Map<string, Array<{row: number, col: number}>>();
-
+    // Find the bounding range of all updates
+    let minRow = updates[0].row, maxRow = updates[0].row;
+    let minCol = updates[0].col, maxCol = updates[0].col;
     for (const update of updates) {
-      if (!byColor.has(update.color)) {
-        byColor.set(update.color, []);
-      }
-      byColor.get(update.color)!.push({row: update.row, col: update.col});
+      if (update.row < minRow) minRow = update.row;
+      if (update.row > maxRow) maxRow = update.row;
+      if (update.col < minCol) minCol = update.col;
+      if (update.col > maxCol) maxCol = update.col;
     }
 
-    // Apply each color in batch
-    for (const [color, cells] of byColor) {
-      for (const cell of cells) {
-        sheet.getRange(cell.row, cell.col).setBackground(color);
-      }
+    // Get current backgrounds for the bounding range
+    const numRows = maxRow - minRow + 1;
+    const numCols = maxCol - minCol + 1;
+    const range = sheet.getRange(minRow, minCol, numRows, numCols);
+    const backgrounds = range.getBackgrounds();
+
+    // Apply updates to the 2D array
+    Logger.log(`Applying ${updates.length} background updates.`)
+    for (const update of updates) {
+      backgrounds[update.row - minRow][update.col - minCol] = update.color;
     }
 
-    // Force changes to be written
+    // Write all backgrounds in a single call
+    range.setBackgrounds(backgrounds);
+
+    Logger.log(`Flush spreadsheet to write updates.`);
     SpreadsheetApp.flush();
+    Logger.log(`Background update complete.`);
   }
 }
 

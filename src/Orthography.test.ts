@@ -1,6 +1,6 @@
 import { Orthography } from './Orthography';
 import { GraphemeColumns } from './types';
-import { Profile } from '@umn-linguistics/segments-js';
+import { Profile } from './segments/profile';
 
 describe('Orthography', () => {
   describe('constructor', () => {

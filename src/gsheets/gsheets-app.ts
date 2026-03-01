@@ -164,13 +164,18 @@ export function validateGlossAlignment() {
   // Fetch data
   const spreadsheetAdapter = new GASSpreadsheetAdapter();
   const transcriptSpreadsheet = new TranscriptSpreadsheet(spreadsheetAdapter);
+
+  Logger.log(`Get transcript data.`)
   const transcript = transcriptSpreadsheet.getTranscriptData();
 
+  Logger.log(`Validate gloss alignment for ${transcript.rows.length} rows.`)
   const misalignedRows = transcript.validateGlosses();
+  Logger.log(`Found ${misalignedRows.length} misaligned rows.`);
 
   // Update spreadsheet with validation results
   transcriptSpreadsheet.updateTranscriptWithGlossAlignmentValidations(misalignedRows, transcript.headers);
 
+  Logger.log(`Display results in html.`)
   // Use custom HTML dialog for better display of multiple IDs
   const template = HtmlService.createTemplateFromFile('validation-results-template');
   template.count = misalignedRows.length;
@@ -271,8 +276,13 @@ export function exportCsv() {
   const file = storageAdapter.getOrCreateFile(folderId, fileName, 'text/csv');
   file.setContent(csvContent);
 
+  const metadataContent = transcript.metadata(sheetName, fileName);
+  const metadataFileName = `${fileName.replace('.csv', '')}-metadata.json`;
+  const metadataFile = storageAdapter.getOrCreateFile(folderId, metadataFileName, 'application/json');
+  metadataFile.setContent(metadataContent);
+
   SpreadsheetApp.getUi()
-    .alert(`Done! Saved as ${fileName} in Google Drive.`);
+    .alert(`Done! Saved ${fileName} and ${metadataFileName} to Google Drive.`);
 }
 
 export function exportTab() {
