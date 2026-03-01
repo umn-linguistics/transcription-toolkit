@@ -1,7 +1,5 @@
 import { ConcordanceRow, TranscriptColumns, TranscriptRow, MorphemeRow, Graphemes, Transcription, GraphemeColumns, MorphemeColumns } from './types';
 import { validHeaders } from './validators';
-import { Profile } from '@umn-linguistics/segments-js';
-import type { TokenizeOptions, NormalizationForm, GraphemeSpec } from '@umn-linguistics/segments-js';
 
 export class Gloss {
   public rows: MorphemeRow[] = [];

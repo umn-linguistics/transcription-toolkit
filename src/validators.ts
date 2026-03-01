@@ -46,7 +46,7 @@ export const validateGloss = (str: string, validMorphemeTags: string[]): string 
   // Build regex pattern:
   // Match either a morpheme tag OR a single valid character (a-z, hyphen, period, space)
   const tagPattern = sortedTags.length > 0 ? sortedTags.join('|') + '|' : '';
-  const pattern = new RegExp(`^(?:${tagPattern}[a-z\\-.  ])`);
+  const pattern = new RegExp(`^(?:[A-Z]{1}[a-z]+|${tagPattern}[a-z\\-.  ])`);
 
   let result = '';
   let i = 0;
@@ -74,8 +74,8 @@ export const validateGloss = (str: string, validMorphemeTags: string[]): string 
 }
 
 export const validateGlossAlignment = (transcription: string, gloss: string): boolean => {
-  const utteranceList = normalizeWhitespace(transcription).split(' ');
-  const utteranceGlossList = normalizeWhitespace(gloss).split(' ');
+  const utteranceList = normalizeWhitespace(String(transcription)).split(' ').filter(Boolean);
+  const utteranceGlossList = normalizeWhitespace(String(gloss)).split(' ').filter(Boolean);
 
   return utteranceList.length === utteranceGlossList.length;
 };
