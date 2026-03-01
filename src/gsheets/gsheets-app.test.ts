@@ -347,9 +347,14 @@ describe('gsheets-app integration tests', () => {
       const rows = [
         ['1', 'word1', 'DET', 'translation1', '', '', '', '', ''],
         ['2', 'word2', 'INVALID', 'translation2', '', '', '', '', ''],
-        ['3', 'word3', 'FUT', 'translation3', '', '', '', '', '']
+        ['3', 'word3', 'FUT', 'translation3', '', '', '', '', ''],
+        ['4', 'word4', 'Ferdinand.FUT', 'translation3', '', '', '', '', ''],
+        ['5', 'word4', 'ferdinand.FUT', 'translation3', '', '', '', '', ''],
+        ['6', 'word4', 'FERDINAND.FUT', 'translation3', '', '', '', '', ''],
+        ['7', 'the ferdinand', 'DET Ferdinand.FUT', 'translation3', '', '', '', '', ''],
+        ['8', 'ab\'bat-otʃ', 'Dad.PAST', 'translation3', '', '', '', '', ''],
       ];
-
+      
       const mockSpreadsheet = new MockSpreadsheetAdapter(headers, rows);
       mockSpreadsheet.addSheet(SHEET_NAMES.MORPHEME_TAGS, ['gloss_abbreviation'], [['DET'], ['FUT'], ['PAST']]);
 
@@ -359,8 +364,9 @@ describe('gsheets-app integration tests', () => {
 
       const invalidTranscriptions = transcript.validateMorphemeLabels(morphemes);
 
-      expect(invalidTranscriptions.length).toBeGreaterThan(0);
+      expect(invalidTranscriptions.length).toBe(2);
       expect(invalidTranscriptions[0].id).toBe('2');
+      expect(invalidTranscriptions[1].id).toBe('6');
     });
 
     test('validateGlossAlignment identifies misaligned glosses', () => {
