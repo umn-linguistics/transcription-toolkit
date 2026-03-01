@@ -1,6 +1,7 @@
 import { ConcordanceRow, TranscriptColumns, TranscriptRow, Transcription, ElanColumns } from './types';
 import { validateGloss, validateGlossAlignment, validHeaders } from './validators';
-import { Profile, TokenizeOptions, Tokenizer } from '@umn-linguistics/segments-js';
+import { Profile } from './segments/profile';
+import { TokenizeOptions, Tokenizer } from './segments/tokenizer';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
 import { Elan } from './Elan';
