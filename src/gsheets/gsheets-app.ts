@@ -117,7 +117,7 @@ export function validateIDs(){
   const issues: string[] = [];
 
   if (missingIds.length > 0) {
-    issues.push(...missingIds.map(row => `Row ${row}: Missing ID`));
+    issues.push(...missingIds.map(row => `Row ${row+1}: Missing ID`));
   }
 
   if (duplicateRowNumbers.length > 0) {
