@@ -1,16 +1,6 @@
 # Developer Guide
 
-This guide covers development workflows, testing, building, and deployment of `transcription tools` to Google Apps Script.
-
-## Table of Contents
-
-- [Prerequisites](#prerequisites)
-- [Development Setup](#development-setup)
-- [Project Structure](#project-structure)
-- [Building the Project](#building-the-project)
-- [Running Tests](#running-tests)
-- [Deploying to Google Apps Script](#deploying-to-google-apps-script)
-- [Development Workflow](#development-workflow)
+This guide covers development workflows, testing, building, and deployment of `Transcription Toolkit` to Google Apps Script.
 
 ## Prerequisites
 
@@ -20,39 +10,19 @@ This guide covers development workflows, testing, building, and deployment of `t
 - **npm**
 - **Google Account**
 
-### Install Global Tools
-
-```bash
-# Install clasp (Command Line Apps Script Projects)
-npm install -g @google/clasp
-
-# Install TypeScript compiler (optional, project has local version)
-npm install -g typescript
-```
-
-## Development Setup
-
-1. **Clone the repository**
+### Install
+1. Install Google clasp (see [Google docs](https://github.com/google/clasp?tab=readme-ov-file#install) for additional details).
    ```bash
-   git clone https://github.com/umn-linguistics/transcription-toolkit
-   cd transcription-toolkit
+   npm install -g @google/clasp
    ```
-
-2. **Install dependencies**
+2. Enable the Google Apps script API at https://script.google.com/home/usersettings
+3. Install dependencies
    ```bash
    npm install
    ```
-
-3. **Login to clasp** (first time only)
+4. Login to clasp 
    ```bash
    clasp login
-   ```
-   This opens a browser window for Google authentication and stores credentials locally.
-
-4. **Verify setup**
-   ```bash
-   npm test
-   npm run build
    ```
 
 ## Building the Project
@@ -99,7 +69,7 @@ npm test -- --coverage
 
 ## Deploying to Google Apps Script
 
-### Initial Setup (First Time Only)
+### Initial Setup
 
 1. **Create a new Google Apps Script project**
 
@@ -129,6 +99,35 @@ Enable it by visiting https://script.google.com/home/usersettings.
 
    Replace `YOUR_SCRIPT_ID_HERE` with your actual Script ID.
 
+### Initial Setup
+
+1. Either create a new spreadsheet from scratch using the `clasp` CLI (**Option A**) or open a spreadsheet in Google Sheets and retrieve the spreadsheet and script IDs (**Option B**).
+
+   - **Option A** Create a new project using the `clasp` CLI.
+      ```bash
+      clasp create --type sheets --title "Transcription Toolkit"
+      ```
+   - **Option B** Get IDs for Google Apps Script project
+      - Open the Google Sheet you want to deploy to in a web browser.
+      - From the URL of the sheet, locate and copy the ID. This will be the string of characters preceded by `https://docs.google.com/spreadsheets/d/` and followed by `/edit?`. For example, `xxxxx` from the following URL:
+         - https://docs.google.com/spreadsheets/d/xxxxx/edit?gid=123#gid=456
+      - This string of characters is `YOUR_SPREADSHEET_ID`.
+      - From the same Google Sheet, navigate to `Extensions` → `Apps Script`.
+         - Select `⚙ Project Settings`, locate the `Script ID`, and copy the value. This is `YOUR_SCRIPT_ID`.
+      - Update `.clasp.json` in the project root with the values identified above. If you chose **Option B** above, these should already be populated 
+         ```json
+         {
+            "scriptId": "YOUR_SCRIPT_ID",
+            "rootDir": "./dist",
+            "parentId": "YOUR_SPREADSHEET_ID"
+         }
+         ```
+
+2. **Ensure Apps Script is Enabled in Google Console**
+
+   Enable it by visiting https://script.google.com/home/usersettings.
+
+
 ### Deployment Workflow
 
 #### 1. Build the Project
@@ -139,7 +138,15 @@ npm run build
 
 This creates the deployable files in `dist/`.
 
-#### 2. Push to Google Apps Script
+#### 2. Run tests
+
+```bash
+npm run test
+```
+
+This creates the deployable files in `dist/`.
+
+#### 3. Push to Google Apps Script
 
 ```bash
 npm run deploy
@@ -156,58 +163,14 @@ This uploads all files from `dist/` to your Google Apps Script project.
 clasp open
 ```
 
-### Alternative: Combined Build and Deploy
+### Release
 
 ```bash
-npm run ci
+npm run release
 ```
 
-This runs tests, builds, and deploys in one command.
+This runs tests, builds, and deploys a versioned release in one command.
 
-### Deployment Tips
-
-**Watch mode during development:**
-```bash
-clasp push --watch
-```
-Automatically pushes changes when files are modified.
-
-**Check what will be deployed:**
-```bash
-clasp status
-```
-
-**Pull remote changes:**
-```bash
-clasp pull
-```
-Downloads the latest version from Google Apps Script.
-
-## Development Workflow
-
-### Typical Development Cycle
-
-1. **Make changes** to TypeScript files in `src/`
-
-2. **Run tests** to verify changes
-   ```bash
-   npm test
-   ```
-
-3. **Build the project**
-   ```bash
-   npm run build
-   ```
-
-4. **Deploy to Google Apps Script**
-   ```bash
-   npm run deploy
-   ```
-
-5. **Test in Google Sheets**
-   - Open the Google Sheet bound to your script
-   - Test the custom menu functions
-   - Check the Apps Script execution logs
 
 ### Viewing Logs
 
@@ -234,11 +197,6 @@ The `appsscript.json` file configures your Apps Script project:
 }
 ```
 
-Key settings:
-- **timeZone**: Affects date/time functions
-- **runtimeVersion**: Use "V8" for modern JavaScript features
-- **exceptionLogging**: "STACKDRIVER" enables detailed error logs
-
 
 ## Additional Resources
 
@@ -259,25 +217,6 @@ Key settings:
 - [esbuild Documentation](https://esbuild.github.io/)
 - [Jest Documentation](https://jestjs.io/)
 
-## Contributing
-
-### Before Submitting Changes
-
-1. **Run tests:**
-   ```bash
-   npm test
-   ```
-
-2. **Build successfully:**
-   ```bash
-   npm run build
-   ```
-
-3. **Verify deployment works:**
-   ```bash
-   npm run deploy
-   clasp open  # Test in browser
-   ```
 
 ## Version Management
 

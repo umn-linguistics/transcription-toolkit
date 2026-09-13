@@ -1,6 +1,7 @@
 import { ConcordanceRow, TranscriptColumns, TranscriptRow, Transcription, ElanColumns } from './types';
 import { validateGloss, validateGlossAlignment, validHeaders } from './validators';
-import { Profile, TokenizeOptions, Tokenizer } from '@umn-linguistics/segments-js';
+import { Profile } from './segments/profile';
+import { TokenizeOptions, Tokenizer } from './segments/tokenizer';
 import { REPLACEMENT_MARKER } from './interfaces/constants';
 import { Gloss } from './Gloss';
 import { Elan } from './Elan';
@@ -58,8 +59,8 @@ export class Transcript {
     const transcription = row.utterance;
 
     if (transcription) {
-      const words = transcription.split(' ');
-      const wordGlosses = row.utteranceGloss.split(' ');
+      const words = String(transcription).split(' ');
+      const wordGlosses = String(row.utteranceGloss).split(' ');
 
       words.forEach((word: string, idx: number) => {
         if (word) {
@@ -68,8 +69,8 @@ export class Transcript {
             word,
             wordGloss: wordGlosses[idx] ?? '',
             wordIndex: idx,
-            utterance: transcription,
-            utteranceGloss: row.utteranceGloss
+            utterance: String(transcription),
+            utteranceGloss: String(row.utteranceGloss)
           };
 
           concordanceData.push(concordanceRow);
@@ -364,5 +365,62 @@ export class Transcript {
     });
 
     return speakerTranscripts;
+  }
+
+  public metadata(sheetName: string, fileName: string): string {
+  
+    const metadataBase = {
+      "@context": "http://www.w3.org/ns/csvw",
+      "dc:conformsTo": "http://cldf.clld.org/v1.0/terms.rdf#StructureDataset",
+      "dc:title": sheetName,
+      "dc:bibliographicCitation": "Cite me like this!",
+      "dc:license": "http://creativecommons.org/licenses/by/4.0/",
+      "null": "?",
+      "tables": [
+        {
+          "url": fileName,
+          "dc:conformsTo": "http://cldf.clld.org/v1.0/terms.rdf#ExampleTable",
+          "tableSchema": {
+            "columns": [
+                {
+                    "name": "id",
+                    "required": true,
+                    "propertyUrl": "http://cldf.clld.org/v1.0/terms.rdf#id",
+                    "datatype": "string"
+                },
+                {
+                    "name": "ipa_transcription",
+                    "required": true,
+                    "propertyUrl": "http://cldf.clld.org/v1.0/terms.rdf#primaryText",
+                    "dc:description": "The example text in the source language.",
+                    "dc:extent": "singlevalued",
+                    "datatype": "string"
+                },
+                {
+                    "name": "gloss",
+                    "required": false,
+                    "propertyUrl": "http://cldf.clld.org/v1.0/terms.rdf#gloss",
+                    "dc:description": "The sequence of glosses aligned with the words of the primary text",
+                    "dc:extent": "multivalued",
+                    "datatype": "string",
+                    "separator": "\t"
+                },
+                {
+                    "name": "free_translation",
+                    "required": false,
+                    "propertyUrl": "http://cldf.clld.org/v1.0/terms.rdf#translatedText",
+                    "dc:extent": "singlevalued",
+                    "dc:description": "The translation of the example text in a meta language",
+                    "datatype": "string"
+                }
+            ],
+            "primaryKey": "id"
+          }
+        }
+      ]
+    }
+
+    return JSON.stringify(metadataBase, null, 4);
+
   }
 }

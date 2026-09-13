@@ -1,7 +1,7 @@
 import { GraphemeRow, GraphemeColumns } from './types';
 import { validHeaders } from './validators';
-import { Profile } from '@umn-linguistics/segments-js';
-import type { GraphemeSpec } from '@umn-linguistics/segments-js';
+import { Profile } from './segments/profile';
+import type { GraphemeSpec } from './segments/profile';
 
 
 export class Orthography {
