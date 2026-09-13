@@ -1,12 +1,13 @@
 {
   "name": "fieldwork-test",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "build": "rollup --config && npm run manifest",
     "test": "jest --transformIgnorePatterns \"node_modules/(?!word-aligner)/\"",
     "deploy": "clasp push",
-    "ci": "npm run test && npm run build && npm run deploy",
+    "deploy-version": "clasp push && clasp deploy --description \"v$npm_package_version\"",
+    "release": "npm run test && npm run build && npm run deploy-version",
     "manifest": "cp appsscript.json dist/ && cp src/gsheets/*-template.html dist/"
   },
   "keywords": [],

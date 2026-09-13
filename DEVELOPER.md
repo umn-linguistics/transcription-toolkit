@@ -163,13 +163,13 @@ This uploads all files from `dist/` to your Google Apps Script project.
 clasp open
 ```
 
-### Alternative: Combined Build and Deploy
+### Release
 
 ```bash
-npm run ci
+npm run release
 ```
 
-This runs tests, builds, and deploys in one command.
+This runs tests, builds, and deploys a versioned release in one command.
 
 
 ### Viewing Logs
